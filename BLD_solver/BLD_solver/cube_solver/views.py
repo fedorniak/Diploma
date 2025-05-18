@@ -1,0 +1,50 @@
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+import json
+from .solvers import (
+    fill_corners_from_string,
+    fill_edges_from_string,
+    solve_corners,
+    solve_edges,
+)
+from .memo_builder import build_corner_letter_sequence, build_edge_letter_sequence,Get_corner_algorithm,Get_edges_algorithm, R_Perm,Get_full_solution,Get_reverse_solution
+
+    
+    
+
+@csrf_exempt
+def solve_rubiks_cube_view(request):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Only POST method is allowed.'}, status=405)
+    try:
+        data = json.loads(request.body)
+        corners_str = data.get('corners')
+        edges_str = data.get('edges')
+
+        if not corners_str or not edges_str:
+            return JsonResponse({'error': 'Missing corners or edges input.'}, status=400)
+        corners = fill_corners_from_string(corners_str)
+        edges = fill_edges_from_string(edges_str)
+        corner_cycles = solve_corners(corners)
+        edge_cycles = solve_edges(edges)
+        corner_letter_seq = build_corner_letter_sequence(corner_cycles)
+        edge_letter_seq = build_edge_letter_sequence(edge_cycles)
+        corners_solution = Get_corner_algorithm(corner_letter_seq)
+        edges_solution = Get_edges_algorithm(edge_letter_seq)
+        parity = None
+        if len(corner_letter_seq) % 2 == 1 or len(edge_letter_seq) % 2 == 1:
+            parity = R_Perm()
+
+        full_solution = Get_full_solution(corners_solution, edges_solution, parity=bool(parity))
+        reverse_solution = Get_reverse_solution(full_solution)
+
+        return JsonResponse({
+            'corner_solution': corners_solution,
+            'edge_solution': edges_solution,
+            'full_solution': full_solution,
+            'reverse_solution': reverse_solution,
+            'parity': None if parity is None else "R_perm()"
+        })
+
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
