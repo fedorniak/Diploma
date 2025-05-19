@@ -1,35 +1,205 @@
-* {
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f4f4f4;
   margin: 0;
-  padding: 0;
+  color: #333;
 }
 
-/* Стиль для заголовка */
+.cube-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.face-row {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+}
+
+.face {
+  display: grid;
+  grid-template-columns: repeat(3, 36px);
+  grid-template-rows: repeat(3, 36px);
+  gap: 1px;
+  padding: 2px;
+  background-color: #ddd;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.cell {
+  width: 36px;
+  height: 36px;
+  border: 1px solid #999;
+  box-sizing: border-box;
+  background-color: white;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: transform 0.1s ease;
+}
+
+.cell:hover {
+  transform: scale(1.04);
+}
+
+.center {
+  pointer-events: none;
+  cursor: default;
+  border: 2px solid #555;
+}
+
+.B .center {
+  background-color: blue;
+}
+.W .center {
+  background-color: white;
+}
+.R .center {
+  background-color: red;
+}
+.O .center {
+  background-color: orange;
+}
+.G .center {
+  background-color: green;
+}
+.Y .center {
+  background-color: yellow;
+}
+
+.palette {
+  margin-top: 14px;
+  text-align: center;
+}
+
+.color-box {
+  width: 32px;
+  height: 32px;
+  display: inline-block;
+  margin: 0 6px;
+  border: 2px solid transparent;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.color-box:hover {
+  border-color: #888;
+}
+
+.color-box.selected {
+  border-color: black;
+}
+
+button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  margin-top: 6px;
+  border-radius: 5px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+#resultsContainer {
+  margin-top: 30px;
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+  display: none;
+}
+
+.result-section {
+  margin-bottom: 30px;
+}
+
+.result-section h3 {
+  font-size: 20px;
+  margin-bottom: 10px;
+  border-bottom: 2px solid #007bff;
+  padding-bottom: 4px;
+  color: #007bff;
+}
+
+.solution-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 16px;
+  margin-top: 10px;
+}
+
+.solution-table th,
+.solution-table td {
+  border: 1px solid #ccc;
+  padding: 10px 12px;
+  text-align: left;
+}
+
+.solution-table th {
+  background-color: #f0f8ff;
+  color: #333;
+  font-weight: 600;
+}
+
+.solution-table td {
+  background-color: #fafafa;
+}
+
+.solution-table td:first-child,
+.solution-table th:first-child {
+  width: 130px;
+  white-space: nowrap;
+}
+
+.solution-table tr:hover td {
+  background-color: #f1f9ff;
+}
+
+@media (max-width: 600px) {
+  .solution-table th,
+  .solution-table td {
+    font-size: 14px;
+    padding: 8px;
+  }
+
+  .solution-table td:first-child,
+  .solution-table th:first-child {
+    width: 50%;
+  }
+}
+
 header {
-  display: flex; /* Горизонтальне розташування */
-  align-items: center; /* Вирівнювання по вертикалі */
-  justify-content: space-between; /* Простір між заголовком і зображенням */
-  background-color: #333; /* Темно-сірий фон */
-  color: #f4f4f4; /* Світлий текст */
-  padding: 10px 20px; /* Відступи всередині заголовка */
-  border-bottom: 2px solid #444; /* Тонка сіра рамка внизу */
+  font-size: 28px;
+  font-weight: 700;
+  color: #007bff;
+  text-align: center;
+  padding: 12px 0;
+  border-bottom: 2px solid #007bff;
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  user-select: none;
 }
 
-/* Стиль для тексту заголовка */
-.header-logo {
-  font-size: 1.5rem; /* Розмір тексту */
-  font-weight: bold; /* Жирний текст */
-  margin: 0; /* Забираємо зовнішні відступи */
-  color: #f4f4f4; /* Світлий текст */
-  font-family: "Poppins", sans-serif;
-}
-
-/* Стиль для зображення */
-.header-img {
-  width: 40px; /* Фіксована ширина */
-  height: 40px; /* Фіксована висота */
-  border-radius: 50%; /* Кругла форма зображення */
-  border: 2px solid #555; /* Сіра рамка */
-  object-fit: cover; /* Забезпечує пропорційне масштабування */
-  background-color: #444; /* Фон для зображення (на випадок прозорості) */
-  padding: 2px; /* Відступ між рамкою та зображенням */
+footer {
+  font-size: 14px;
+  color: #666;
+  text-align: center;
+  padding: 12px 0;
+  border-top: 1px solid #ddd;
+  margin-top: 30px;
+  background-color: #f9f9f9;
+  user-select: none;
+  font-style: italic;
 }

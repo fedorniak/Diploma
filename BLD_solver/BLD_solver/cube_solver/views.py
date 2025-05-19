@@ -41,9 +41,11 @@ def solve_rubiks_cube_view(request):
         return JsonResponse({
             'corner_solution': corners_solution,
             'edge_solution': edges_solution,
-            'full_solution': full_solution,
-            'reverse_solution': reverse_solution,
-            'parity': None if parity is None else "R_perm()"
+            'parity': None if parity is None else f"{R_Perm()}",
+            'corner_letter_seq': corner_letter_seq,
+            'edge_letter_seq': edge_letter_seq
+                # 'full_solution': full_solution,
+            # 'reverse_solution': reverse_solution,
         })
 
     except Exception as e:

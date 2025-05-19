@@ -3,167 +3,138 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Rubik's Cube Solver</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        background-color: #f4f4f9;
-        margin: 0;
-        padding: 0;
-      }
-      .container {
-        width: 80%;
-        margin: 50px auto;
-        padding: 20px;
-        background-color: #ffffff;
-        border-radius: 10px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      }
-      h1 {
-        text-align: center;
-        color: #333;
-      }
-      button {
-        display: block;
-        width: 200px;
-        margin: 20px auto;
-        padding: 10px;
-        font-size: 16px;
-        background-color: #4caf50;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-      }
-      button:hover {
-        background-color: #45a049;
-      }
-      table {
-        width: 100%;
-        margin-top: 20px;
-        border-collapse: collapse;
-        text-align: left;
-      }
-      th,
-      td {
-        padding: 10px;
-        border: 1px solid #ddd;
-        text-align: center;
-      }
-      th {
-        background-color: #f2f2f2;
-        font-weight: bold;
-      }
-      td {
-        background-color: #f9f9f9;
-      }
-      .parity {
-        color: red;
-        font-weight: bold;
-      }
-    </style>
+    <title>BLD solver</title>
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <div class="container">
-      <h1>Rubik's Cube Solver</h1>
-      <button onclick="sendRequest()">Solve Cube</button>
+    <header>Old Pochmann solver</header>
+    <div class="cube-wrapper">
+      <!-- Синя грань (B) зверху посередині -->
+      <div class="face-row">
+        <div class="face B">
+          <div class="cell corner c1 cor1"></div>
+          <div class="cell edge e1 ed1"></div>
+          <div class="cell corner c2 cor2"></div>
+          <div class="cell edge e2 ed2"></div>
+          <div class="cell center"></div>
+          <div class="cell edge e3 ed3"></div>
+          <div class="cell corner c3 cor3"></div>
+          <div class="cell edge e4 ed4"></div>
+          <div class="cell corner c4 cor4"></div>
+        </div>
+      </div>
 
-      <table id="cornersTable">
-        <thead>
-          <tr>
-            <th>Corners</th>
-            <th>Solution</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- Corner solutions will go here -->
-        </tbody>
-      </table>
+      <!-- Оранжева (O), Біла (W), Червона (R) — посередині, по горизонталі -->
+      <div class="face-row">
+        <div class="face O">
+          <div class="cell corner c5 cor1"></div>
+          <div class="cell edge e5 ed2"></div>
+          <div class="cell corner c6 cor3"></div>
+          <div class="cell edge e6 ed12"></div>
+          <div class="cell center"></div>
+          <div class="cell edge e7 ed5"></div>
+          <div class="cell corner c7 cor7"></div>
+          <div class="cell edge e8 ed8"></div>
+          <div class="cell corner c8 cor5"></div>
+        </div>
+        <div class="face W">
+          <div class="cell corner c9 cor3"></div>
+          <div class="cell edge e9 ed4"></div>
+          <div class="cell corner c10 cor4"></div>
+          <div class="cell edge e10 ed5"></div>
+          <div class="cell center"></div>
+          <div class="cell edge e11 ed6"></div>
+          <div class="cell corner c11 cor5"></div>
+          <div class="cell edge e12 ed7"></div>
+          <div class="cell corner c12 cor6"></div>
+        </div>
+        <div class="face R">
+          <div class="cell corner c13 cor4"></div>
+          <div class="cell edge e13 ed3"></div>
+          <div class="cell corner c14 cor2"></div>
+          <div class="cell edge e14 ed6"></div>
+          <div class="cell center"></div>
+          <div class="cell edge e15 ed11"></div>
+          <div class="cell corner c15 cor6"></div>
+          <div class="cell edge e16 ed9"></div>
+          <div class="cell corner c16 cor8"></div>
+        </div>
+      </div>
 
-      <table id="edgesTable">
-        <thead>
-          <tr>
-            <th>Edges</th>
-            <th>Solution</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- Edge solutions will go here -->
-        </tbody>
-      </table>
+      <!-- Зелена грань (G) під білою -->
+      <div class="face-row">
+        <div class="face G">
+          <div class="cell corner c17 cor5"></div>
+          <div class="cell edge e17 ed7"></div>
+          <div class="cell corner c18 cor6"></div>
+          <div class="cell edge e18 ed8"></div>
+          <div class="cell center"></div>
+          <div class="cell edge e19 ed9"></div>
+          <div class="cell corner c19 cor7"></div>
+          <div class="cell edge e20 ed10"></div>
+          <div class="cell corner c20 cor8"></div>
+        </div>
+      </div>
 
-      <table id="parityTable">
-        <thead>
-          <tr>
-            <th>Parity</th>
-            <th>Solution</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- Parity solution will go here -->
-        </tbody>
-      </table>
+      <!-- Жовта грань (Y) під зеленою -->
+      <div class="face-row">
+        <div class="face Y">
+          <div class="cell corner c21 cor7"></div>
+          <div class="cell edge e21 ed10"></div>
+          <div class="cell corner c22 cor8"></div>
+          <div class="cell edge e22 ed12"></div>
+          <div class="cell center"></div>
+          <div class="cell edge e23 ed11"></div>
+          <div class="cell corner c23 cor1"></div>
+          <div class="cell edge e24 ed1"></div>
+          <div class="cell corner c24 cor2"></div>
+        </div>
+      </div>
+      <button id="sendColors">Зібрати</button>
+
+      <div class="palette" id="palette">
+        <div
+          class="color-box"
+          data-code="R"
+          title="Red"
+          style="background-color: red"
+        ></div>
+        <div
+          class="color-box"
+          data-code="G"
+          title="Green"
+          style="background-color: green"
+        ></div>
+        <div
+          class="color-box"
+          data-code="B"
+          title="Blue"
+          style="background-color: blue"
+        ></div>
+        <div
+          class="color-box"
+          data-code="O"
+          title="Orange"
+          style="background-color: orange"
+        ></div>
+        <div
+          class="color-box"
+          data-code="W"
+          title="White"
+          style="background-color: white; border: 1px solid #ccc"
+        ></div>
+        <div
+          class="color-box"
+          data-code="Y"
+          title="Yellow"
+          style="background-color: yellow"
+        ></div>
+      </div>
+      <div id="result-area"></div>
+      <button id="clearColors">Очистити клітинки</button>
     </div>
-
-    <script>
-      async function sendRequest() {
-        const response = await fetch("http://127.0.0.1:8000/api/solve/", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            edges: "WOYGBGGWORYYBGORRBBWOWYR",
-            corners: "YWOGGWBBBOOGYOWRYRRYWBRG",
-          }),
-        });
-
-        const data = await response.json();
-        console.log(data);
-
-        // Populate the Corners table
-        const cornersTable = document
-          .getElementById("cornersTable")
-          .getElementsByTagName("tbody")[0];
-        data.corner_solution.forEach((corner) => {
-          const row = cornersTable.insertRow();
-          const cell1 = row.insertCell(0);
-          const cell2 = row.insertCell(1);
-          cell1.innerHTML = corner[0];
-          cell2.innerHTML = corner[1];
-        });
-
-        // Populate the Edges table
-        const edgesTable = document
-          .getElementById("edgesTable")
-          .getElementsByTagName("tbody")[0];
-        data.edge_solution.forEach((edge) => {
-          const row = edgesTable.insertRow();
-          const cell1 = row.insertCell(0);
-          const cell2 = row.insertCell(1);
-          cell1.innerHTML = edge[0];
-          cell2.innerHTML = edge[1];
-        });
-
-        // Populate the Parity table if needed
-        const parityTable = document
-          .getElementById("parityTable")
-          .getElementsByTagName("tbody")[0];
-        if (data.parity !== "None") {
-          const row = parityTable.insertRow();
-          const cell1 = row.insertCell(0);
-          const cell2 = row.insertCell(1);
-          cell1.innerHTML = "Parity";
-          cell2.innerHTML = data.parity;
-          cell2.classList.add("parity");
-        } else {
-          const row = parityTable.insertRow();
-          const cell1 = row.insertCell(0);
-          const cell2 = row.insertCell(1);
-          cell1.innerHTML = "No Parity";
-          cell2.innerHTML = "";
-        }
-      }
-    </script>
+    <div id="resultsContainer"></div>
+    <footer>Федорняк Сергій</footer>
+    <script src="script.js"></script>
   </body>
 </html>
