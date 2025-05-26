@@ -2,7 +2,8 @@
 
 def solve_corners(corners):
     solved = [] 
-    result= []    
+    result= [] 
+    counter=0   
     for idx in range(2, len(corners) + 1):
         corner = corners[idx]
         keys = [list(d.keys())[0] for d in corner]
@@ -10,6 +11,7 @@ def solve_corners(corners):
         if set(keys) == set(values):
             solved.append({keys[0]: keys[1:]})
     while True:
+        counter+=1
         corner = corners[1]  
         key = corner[0]['W']  
         val1 = corner[1][list(corner[1].keys())[0]]  
@@ -130,7 +132,9 @@ def solve_corners(corners):
                 break
         if should_exit:
             break
-    
+        if counter>20:
+            raise ValueError("Неправильно введений кубик")
+
     res=solve_corner_flips(corners,result)
     return res
   
@@ -198,7 +202,7 @@ def fill_corners_from_string(corners_str):
 def solve_edges(edges):
     solved = []
     result = []
-
+    counter=0
     for idx in range(2, len(edges) + 1):
         edge = edges[idx]
         keys = [list(d.keys())[0] for d in edge]
@@ -206,6 +210,7 @@ def solve_edges(edges):
         if set(keys) == set(values):
             solved.append({keys[0]: [keys[1]]})
     while True:
+        counter+=1
         edge = edges[1]
         key = list(edge[0].values())[0]
         val1 = list(edge[1].values())[0]
@@ -294,6 +299,9 @@ def solve_edges(edges):
 
             solved.append(buffer)
             result.append(buffer)
+
+        if counter>30:
+            raise ValueError("Неправильно введений кубик")
 
         if should_exit:
             break

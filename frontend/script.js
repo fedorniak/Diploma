@@ -67,6 +67,67 @@ document.getElementById("clearColors").onclick = () => {
     resultsContainer.style.display = "none";
   });
 };
+function checkColorConflicts(cornerColors, edgeColors) {
+  const opposites = [
+    ["W", "Y"],
+    ["G", "B"],
+    ["R", "O"],
+  ];
+
+  const cornerMap = {};
+  const edgeMap = {};
+
+  for (let i = 0; i < 8; i++) {
+    const colors = [
+      cornerColors[i * 3],
+      cornerColors[i * 3 + 1],
+      cornerColors[i * 3 + 2],
+    ];
+    cornerMap[`cor${i + 1}`] = colors;
+  }
+
+  for (let i = 0; i < 12; i++) {
+    const colors = [edgeColors[i * 2], edgeColors[i * 2 + 1]];
+    edgeMap[`ed${i + 1}`] = colors;
+  }
+
+  const hasOpposite = (colors) => {
+    for (const [a, b] of opposites) {
+      if (colors.includes(a) && colors.includes(b)) return `${a}-${b}`;
+    }
+    return null;
+  };
+
+  for (const key in cornerMap) {
+    const colors = cornerMap[key];
+    const opp = hasOpposite(colors);
+    if (opp) {
+      alert(`На елементі є протилежні кольори: $`);
+      return false;
+    }
+    const unique = new Set(colors);
+    if (unique.size !== colors.length) {
+      alert(`На елементі  є однакові кольори:`);
+      return false;
+    }
+  }
+
+  for (const key in edgeMap) {
+    const colors = edgeMap[key];
+    const opp = hasOpposite(colors);
+    if (opp) {
+      alert(`На елементі є протилежні кольори: $`);
+      return false;
+    }
+    const unique = new Set(colors);
+    if (unique.size !== colors.length) {
+      alert(`На елементі  є однакові кольори: `);
+      return false;
+    }
+  }
+
+  return true;
+}
 
 function validateCubeInput(corners, edges) {
   const colors = ["R", "G", "B", "O", "W", "Y"];
@@ -133,13 +194,13 @@ document.getElementById("sendColors").onclick = () => {
   })
     .then((response) => {
       if (!response.ok) {
-        throw new Error("Помилка сервера: " + response.statusText);
+        throw new Error("Непраильно введений кубик");
       }
       return response.json();
     })
     .then((data) => {
       if (data.error) {
-        alert("Помилка: " + data.error);
+        alert("Непраильно введений кубик");
         return;
       }
       console.log("Рішення:", data);
