@@ -1,140 +1,244 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uk">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BLD solver</title>
+    <title>Old Pochmann BLD Solver</title>
+
+    <!-- Fonts: Oxanium (display) + JetBrains Mono (code) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Oxanium:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <header>Old Pochmann solver</header>
-    <div class="cube-wrapper">
-      <!-- Синя грань (B) зверху посередині -->
-      <div class="face-row">
-        <div class="face B">
-          <div class="cell corner c1 cor1"></div>
-          <div class="cell edge e1 ed1"></div>
-          <div class="cell corner c2 cor2"></div>
-          <div class="cell edge e2 ed2"></div>
-          <div class="cell center"></div>
-          <div class="cell edge e3 ed3"></div>
-          <div class="cell corner c3 cor3"></div>
-          <div class="cell edge e4 ed4"></div>
-          <div class="cell corner c4 cor4"></div>
+    <!-- ========== HEADER ========== -->
+    <header class="app-header">
+      <div class="header-inner">
+        <div class="header-cube-icon">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <rect x="2" y="10" width="13" height="13" rx="2" fill="#4a78ff" opacity="0.9"/>
+            <rect x="17" y="10" width="13" height="13" rx="2" fill="#4ad8ff" opacity="0.7"/>
+            <rect x="9.5" y="2" width="13" height="10" rx="2" fill="#4a78ff" opacity="0.5"/>
+            <rect x="9.5" y="21" width="13" height="9" rx="2" fill="#4a78ff" opacity="0.3"/>
+          </svg>
         </div>
+        <div class="header-text">
+          <h1>Old Pochmann</h1>
+          <span class="header-sub">BLD Cube Solver</span>
+        </div>
+        <div class="header-badge">3x3 BLD</div>
       </div>
+    </header>
 
-      <!-- Оранжева (O), Біла (W), Червона (R) — посередині, по горизонталі -->
-      <div class="face-row">
-        <div class="face O">
-          <div class="cell corner c5 cor1"></div>
-          <div class="cell edge e5 ed2"></div>
-          <div class="cell corner c6 cor3"></div>
-          <div class="cell edge e6 ed12"></div>
-          <div class="cell center"></div>
-          <div class="cell edge e7 ed5"></div>
-          <div class="cell corner c7 cor7"></div>
-          <div class="cell edge e8 ed8"></div>
-          <div class="cell corner c8 cor5"></div>
-        </div>
-        <div class="face W">
-          <div class="cell corner c9 cor3"></div>
-          <div class="cell edge e9 ed4"></div>
-          <div class="cell corner c10 cor4"></div>
-          <div class="cell edge e10 ed5"></div>
-          <div class="cell center"></div>
-          <div class="cell edge e11 ed6"></div>
-          <div class="cell corner c11 cor5"></div>
-          <div class="cell edge e12 ed7"></div>
-          <div class="cell corner c12 cor6"></div>
-        </div>
-        <div class="face R">
-          <div class="cell corner c13 cor4"></div>
-          <div class="cell edge e13 ed3"></div>
-          <div class="cell corner c14 cor2"></div>
-          <div class="cell edge e14 ed6"></div>
-          <div class="cell center"></div>
-          <div class="cell edge e15 ed11"></div>
-          <div class="cell corner c15 cor6"></div>
-          <div class="cell edge e16 ed9"></div>
-          <div class="cell corner c16 cor8"></div>
-        </div>
-      </div>
+    <!-- ========== MAIN APP ========== -->
+    <main class="app-layout">
 
-      <!-- Зелена грань (G) під білою -->
-      <div class="face-row">
-        <div class="face G">
-          <div class="cell corner c17 cor5"></div>
-          <div class="cell edge e17 ed7"></div>
-          <div class="cell corner c18 cor6"></div>
-          <div class="cell edge e18 ed8"></div>
-          <div class="cell center"></div>
-          <div class="cell edge e19 ed9"></div>
-          <div class="cell corner c19 cor7"></div>
-          <div class="cell edge e20 ed10"></div>
-          <div class="cell corner c20 cor8"></div>
+      <!-- ======= LEFT PANEL: Cube Input ======= -->
+      <section class="panel input-panel">
+        <div class="panel-header">
+          <span class="panel-num">01</span>
+          <h2>Введення куба</h2>
+          <span class="panel-hint">Оберіть колір → клікайте на клітинки</span>
         </div>
-      </div>
 
-      <!-- Жовта грань (Y) під зеленою -->
-      <div class="face-row">
-        <div class="face Y">
-          <div class="cell corner c21 cor7"></div>
-          <div class="cell edge e21 ed10"></div>
-          <div class="cell corner c22 cor8"></div>
-          <div class="cell edge e22 ed12"></div>
-          <div class="cell center"></div>
-          <div class="cell edge e23 ed11"></div>
-          <div class="cell corner c23 cor1"></div>
-          <div class="cell edge e24 ed1"></div>
-          <div class="cell corner c24 cor2"></div>
+        <!-- Rubik's Cube Face Layout (structure preserved exactly) -->
+        <div class="cube-wrapper">
+
+          <!-- Blue face (B) — top -->
+          <div class="face-row">
+            <div class="face B">
+              <div class="cell corner c1 cor1"></div>
+              <div class="cell edge e1 ed1"></div>
+              <div class="cell corner c2 cor2"></div>
+              <div class="cell edge e2 ed2"></div>
+              <div class="cell center"></div>
+              <div class="cell edge e3 ed3"></div>
+              <div class="cell corner c3 cor3"></div>
+              <div class="cell edge e4 ed4"></div>
+              <div class="cell corner c4 cor4"></div>
+            </div>
+          </div>
+
+          <!-- Middle row: Orange (O), White (W), Red (R) -->
+          <div class="face-row">
+            <div class="face O">
+              <div class="cell corner c5 cor1"></div>
+              <div class="cell edge e5 ed2"></div>
+              <div class="cell corner c6 cor3"></div>
+              <div class="cell edge e6 ed12"></div>
+              <div class="cell center"></div>
+              <div class="cell edge e7 ed5"></div>
+              <div class="cell corner c7 cor7"></div>
+              <div class="cell edge e8 ed8"></div>
+              <div class="cell corner c8 cor5"></div>
+            </div>
+            <div class="face W">
+              <div class="cell corner c9 cor3"></div>
+              <div class="cell edge e9 ed4"></div>
+              <div class="cell corner c10 cor4"></div>
+              <div class="cell edge e10 ed5"></div>
+              <div class="cell center"></div>
+              <div class="cell edge e11 ed6"></div>
+              <div class="cell corner c11 cor5"></div>
+              <div class="cell edge e12 ed7"></div>
+              <div class="cell corner c12 cor6"></div>
+            </div>
+            <div class="face R">
+              <div class="cell corner c13 cor4"></div>
+              <div class="cell edge e13 ed3"></div>
+              <div class="cell corner c14 cor2"></div>
+              <div class="cell edge e14 ed6"></div>
+              <div class="cell center"></div>
+              <div class="cell edge e15 ed11"></div>
+              <div class="cell corner c15 cor6"></div>
+              <div class="cell edge e16 ed9"></div>
+              <div class="cell corner c16 cor8"></div>
+            </div>
+          </div>
+
+          <!-- Green face (G) -->
+          <div class="face-row">
+            <div class="face G">
+              <div class="cell corner c17 cor5"></div>
+              <div class="cell edge e17 ed7"></div>
+              <div class="cell corner c18 cor6"></div>
+              <div class="cell edge e18 ed8"></div>
+              <div class="cell center"></div>
+              <div class="cell edge e19 ed9"></div>
+              <div class="cell corner c19 cor7"></div>
+              <div class="cell edge e20 ed10"></div>
+              <div class="cell corner c20 cor8"></div>
+            </div>
+          </div>
+
+          <!-- Yellow face (Y) -->
+          <div class="face-row">
+            <div class="face Y">
+              <div class="cell corner c21 cor7"></div>
+              <div class="cell edge e21 ed10"></div>
+              <div class="cell corner c22 cor8"></div>
+              <div class="cell edge e22 ed12"></div>
+              <div class="cell center"></div>
+              <div class="cell edge e23 ed11"></div>
+              <div class="cell corner c23 cor1"></div>
+              <div class="cell edge e24 ed1"></div>
+              <div class="cell corner c24 cor2"></div>
+            </div>
+          </div>
         </div>
-      </div>
-      <button id="sendColors">Зібрати</button>
+        <!-- /cube-wrapper -->
 
-      <div class="palette" id="palette">
-        <div
-          class="color-box"
-          data-code="R"
-          title="Red"
-          style="background-color: red"
-        ></div>
-        <div
-          class="color-box"
-          data-code="G"
-          title="Green"
-          style="background-color: green"
-        ></div>
-        <div
-          class="color-box"
-          data-code="B"
-          title="Blue"
-          style="background-color: blue"
-        ></div>
-        <div
-          class="color-box"
-          data-code="O"
-          title="Orange"
-          style="background-color: orange"
-        ></div>
-        <div
-          class="color-box"
-          data-code="W"
-          title="White"
-          style="background-color: white; border: 1px solid #ccc"
-        ></div>
-        <div
-          class="color-box"
-          data-code="Y"
-          title="Yellow"
-          style="background-color: yellow"
-        ></div>
-      </div>
-      <div id="result-area"></div>
-      <button id="clearColors">Очистити клітинки</button>
-    </div>
-    <div id="resultsContainer"></div>
-    <footer>Федорняк Сергій</footer>
+        <!-- Colour Palette -->
+        <div class="palette-section">
+          <div class="palette-label">Активний колір:</div>
+          <div class="palette" id="palette">
+            <div class="color-box" data-code="R" title="Red (Червоний)"   style="background:#e82020"></div>
+            <div class="color-box" data-code="G" title="Green (Зелений)"  style="background:#00a820"></div>
+            <div class="color-box" data-code="B" title="Blue (Синій)"     style="background:#1040ff"></div>
+            <div class="color-box" data-code="O" title="Orange (Помаранч)" style="background:#ff8c00"></div>
+            <div class="color-box" data-code="W" title="White (Білий)"    style="background:#f0f0f0; border:1px solid #555"></div>
+            <div class="color-box" data-code="Y" title="Yellow (Жовтий)"  style="background:#ffe000"></div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-row">
+          <button id="sendColors" class="btn btn-primary">
+            <svg class="btn-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="3,2 14,8 3,14"/>
+            </svg>
+            Розв'язати
+          </button>
+          <button id="clearColors" class="btn btn-ghost">
+            <svg class="btn-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M2 4h12M6 4V2h4v2M5 4v9a1 1 0 001 1h4a1 1 0 001-1V4"/>
+            </svg>
+            Очистити
+          </button>
+        </div>
+      </section>
+      <!-- /input-panel -->
+
+      <!-- ======= RIGHT PANEL: Visualisation + Results ======= -->
+      <section class="panel results-panel" id="resultsPanel">
+
+        <!-- 3D Visualization -->
+        <div class="panel-header">
+          <span class="panel-num">02</span>
+          <h2>3D Візуалізація</h2>
+        </div>
+
+        <div class="viz-block">
+          <!-- Three.js canvas container -->
+          <div id="cubeCanvas" class="cube-canvas">
+            <div class="canvas-placeholder">
+              <svg width="48" height="48" viewBox="0 0 48 48" fill="none" opacity="0.3">
+                <rect x="4" y="16" width="19" height="19" rx="3" stroke="#4a78ff" stroke-width="2"/>
+                <rect x="25" y="16" width="19" height="19" rx="3" stroke="#4a78ff" stroke-width="2"/>
+                <rect x="14" y="3" width="19" height="15" rx="3" stroke="#4a78ff" stroke-width="2"/>
+                <rect x="14" y="33" width="19" height="12" rx="3" stroke="#4a78ff" stroke-width="2"/>
+              </svg>
+              <p>Розв'яжіть куб, щоб побачити анімацію</p>
+            </div>
+          </div>
+
+          <!-- Step info bar -->
+          <div class="step-info-bar" id="stepInfoBar">
+            <div class="step-progress-row">
+              <span class="step-counter" id="stepCounter">Крок 0 / 0</span>
+              <div class="step-progress-track">
+                <div class="step-progress-fill" id="stepProgressFill"></div>
+              </div>
+            </div>
+            <div class="step-detail-row">
+              <span class="step-type-tag" id="stepTypeTag">—</span>
+              <span class="step-letter-display" id="stepLetter">—</span>
+              <code class="step-alg-display" id="stepAlg">Розв'яжіть куб для початку</code>
+            </div>
+          </div>
+
+          <!-- Playback controls -->
+          <div class="viz-controls" id="vizControls">
+            <button class="ctrl-btn" id="ctrlReset" title="На початок">⏮</button>
+            <button class="ctrl-btn" id="ctrlPrev" title="Попередній крок">◀</button>
+            <button class="ctrl-btn ctrl-play" id="ctrlPlay" title="Відтворити / Пауза">▶</button>
+            <button class="ctrl-btn" id="ctrlNext" title="Наступний крок">▶</button>
+            <button class="ctrl-btn" id="ctrlEnd" title="До кінця">⏭</button>
+            <div class="speed-wrap">
+              <span class="speed-label">Швидкість</span>
+              <input type="range" id="speedRange" min="1" max="5" value="3" />
+              <span class="speed-val" id="speedVal">3</span>
+            </div>
+          </div>
+        </div>
+        <!-- /viz-block -->
+
+        <!-- Solution Results -->
+        <div class="panel-header" style="margin-top:32px">
+          <span class="panel-num">03</span>
+          <h2>Рішення</h2>
+        </div>
+
+        <div id="resultsContainer"></div>
+      </section>
+      <!-- /results-panel -->
+
+    </main>
+
+    <footer class="app-footer">
+      <span class="footer-author">Федорняк Сергій</span>
+      <span class="footer-sep">·</span>
+      <span>Old Pochmann BLD Solver</span>
+      <span class="footer-sep">·</span>
+      <span>Three.js r128</span>
+    </footer>
+
+    <!-- Three.js from CDN (r128) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="script.js"></script>
   </body>
 </html>

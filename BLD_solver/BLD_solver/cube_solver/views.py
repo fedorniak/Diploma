@@ -25,8 +25,14 @@ def solve_rubiks_cube_view(request):
             return JsonResponse({'error': 'Missing corners or edges input.'}, status=400)
         corners = fill_corners_from_string(corners_str)
         edges = fill_edges_from_string(edges_str)
+        print("corners:")
+        print(corners)
+        print("edges:")
+        print(edges)
         corner_cycles = solve_corners(corners)
         edge_cycles = solve_edges(edges)
+        print(f'corn_c:{corner_cycles}')
+        print(f'edge_c: {edge_cycles}')
         corner_letter_seq = build_corner_letter_sequence(corner_cycles)
         edge_letter_seq = build_edge_letter_sequence(edge_cycles)
         corners_solution = Get_corner_algorithm(corner_letter_seq)
@@ -43,9 +49,9 @@ def solve_rubiks_cube_view(request):
             'edge_solution': edges_solution,
             'parity': None if parity is None else f"{R_Perm()}",
             'corner_letter_seq': corner_letter_seq,
-            'edge_letter_seq': edge_letter_seq
-                # 'full_solution': full_solution,
-            # 'reverse_solution': reverse_solution,
+            'edge_letter_seq': edge_letter_seq,
+            'reverse_solution': reverse_solution,
+            # 'full_solution': full_solution,
         })
 
     except Exception as e:
