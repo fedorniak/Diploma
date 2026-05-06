@@ -368,3 +368,149 @@ def fill_edges_from_string(edges_str):
                         break
 
     return edges
+
+
+
+
+
+def solve_edges_m2(edges):
+    solved = []
+    result = []
+    counter = 0
+    
+    # Змінено: перевіряємо всі ребра з 1 по 12, але пропускаємо буфер (9)
+    for idx in range(1, len(edges) + 1):
+        if idx == 9:
+            continue
+        edge = edges[idx]
+        keys = [list(d.keys())[0] for d in edge]
+        values = [list(d.values())[0] for d in edge]
+        if set(keys) == set(values):
+            solved.append({keys[0]: [keys[1]]})
+            
+    while True:
+        counter += 1
+        # Змінено: беремо значення з нового буфера (9)
+        edge = edges[9]
+        key = list(edge[0].values())[0]
+        val1 = list(edge[1].values())[0]
+        buffer = {key: [val1]}
+        should_exit = False
+        num = None
+
+        for idx, item in edges.items():
+            keys_in_row = {list(d.keys())[0] for d in item}
+            # Змінено: перевіряємо чи елемент належить буферу (9)
+            if key in keys_in_row and val1 in keys_in_row and idx == 9:
+                found_spot = None
+                for k, v in edges.items():
+                    if k == 9: 
+                        continue
+                    keys = {list(d.keys())[0] for d in v}
+                    if any(set(list(solved_dict.keys()) + solved_dict[list(solved_dict.keys())[0]]) == keys for solved_dict in solved):
+                        continue
+                    else:
+                        found_spot = k
+                        break
+
+                if found_spot is None:
+                    should_exit = True
+                    break
+
+                new_key = list(edges[found_spot][0].values())[0]
+                new_val = list(edges[found_spot][1].values())[0]
+                new_buffer = {new_key: [new_val]}
+
+                pos_key = list(edges[found_spot][0].keys())[0]
+                pos_val = list(edges[found_spot][1].keys())[0]
+                pos_buffer = {pos_key: [pos_val]}
+
+                keys = [list(d.keys())[0] for d in edges[found_spot]]
+                values = [key, val1]
+                updated_row = [{k: v} for k, v in zip(keys, values)]
+                edges[found_spot] = updated_row
+
+                edges[9] = [
+                    {list(edges[9][0].keys())[0]: new_key},
+                    {list(edges[9][1].keys())[0]: new_val},
+                ]
+
+                result.append(pos_buffer)
+                break
+
+            elif key in keys_in_row and val1 in keys_in_row:
+                num = idx
+                break
+
+        if num is not None:
+            found_row = edges[num]
+            new_buffer = {}
+
+            for key_in_buffer, val_list in buffer.items():
+                for item in found_row:
+                    if key_in_buffer in item:
+                        others = [d for d in found_row if d != item]
+                        new_val = list(others[0].values())[0]
+                        new_buffer[item[key_in_buffer]] = [new_val]
+
+
+            val1_buf = list(buffer.keys())[0]
+            val2_buf = buffer[val1_buf][0]
+            keys = [list(d.keys())[0] for d in found_row]
+            values = [val1_buf, val2_buf]
+            updated_row = []
+
+            for k in keys:
+                matched = None
+                for v in values:
+                    if k == v:
+                        matched = v
+                        break
+                if matched:
+                    updated_row.append({k: matched})
+
+            edges[num] = updated_row
+
+            val1_buf = list(new_buffer.keys())[0]
+            val2_buf = new_buffer[val1_buf][0]
+        
+            edges[9] = [
+                {list(edges[9][0].keys())[0]: val1_buf},
+                {list(edges[9][1].keys())[0]: val2_buf},
+            ]
+
+            solved.append(buffer)
+            result.append(buffer)
+
+        if counter > 30:
+            raise ValueError("Неправильно введений кубик")
+
+        if should_exit:
+            break
+            
+    res = solve_edge_flips_m2(edges, result)
+    return res
+
+def solve_edge_flips_m2(edges, result):
+    to_solve = []
+    for idx, edge in edges.items():
+        all_flipped = all(list(d.keys())[0] != list(d.values())[0] for d in edge)
+        if all_flipped:
+            to_solve.append({idx: edge})
+
+    for flip in to_solve:
+        idx = list(flip.keys())[0]
+        if idx == 9:
+            continue
+
+        items = flip[idx]
+        keys = [list(d.keys())[0] for d in items]
+        values = [list(d.values())[0] for d in items]
+
+        buffer1 = {keys[0]: [keys[1]]}
+        buffer2 = {values[0]: [values[1]]}
+
+        result.append(buffer1)
+        result.append(buffer2)
+
+    return result

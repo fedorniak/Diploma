@@ -20,6 +20,7 @@ def Jb_perm():
 def build_edge_letter_sequence(edge_chain):
   EDGE_LETTERS = {
     ('W','B'):'А',
+    ('W','R'):'Б',
     ('W','G'):'В',
     ('W','O'):'Г',
     ('B','W'):'І',
@@ -41,6 +42,7 @@ def build_edge_letter_sequence(edge_chain):
     ('B','R'):'Л',
     ('R','G'):'Ф',
     ('G','R'):'Д',
+    ('R','W'):'У'
 }
   result = []
   for pair in edge_chain:
@@ -150,18 +152,31 @@ def Get_corner_algorithm(corner_letters):
 
 def Get_full_solution(corners, edges, parity=False):
     result = ""
-
-    for _, alg in corners:
+    parity_alg=m2_parity()
+    for _, alg in edges:
         result += alg + " "
     if parity==True:
-      result += R_Perm()+ " "
+      result += parity_alg+ " "
 
-    for _, alg in edges:
+    for _, alg in corners:
         result += alg + " "
 
 
     return result.strip()
-  
+
+# def Get_full_solution_m2( edges,corners, parity=False):
+#     result = ""
+#     parity_alg=m2_parity
+#     for _, alg in corners:
+#         result += alg + " "
+#     if parity==True:
+#       result += parity_alg+ " "
+
+#     for _, alg in edges:
+#         result += alg + " "
+
+
+#     return result.strip() 
   
 def Get_reverse_solution(solution):
     moves = solution.strip().split()
@@ -176,3 +191,66 @@ def Get_reverse_solution(solution):
             reversed_moves.append(move + "'") 
 
     return ' '.join(reversed_moves)
+  
+  
+  
+  
+  #M2 algorithm
+def Get_edges_algorithm_m2(edge_letters):
+  SET_UP_MOVES={
+    'А': f"M2",
+    'Б': f"R' U R U' M2 U R' U' R",
+    'В': f"U2 M' U2 M'",
+    'Г': f"L U' L' U M2 U' L U L'",
+    'І': f"U B' R U' B M2 B' U R' B U'",
+    'У': f"B' R B M2 B' R' B",
+    'Є': f"D M' U R2 U' M U R2 U' D' M2",
+    'О': f"B L' B' M2 B L B'",
+    'Ш': f"M U2 M U2",
+    'Я': f"U' L2 U M2 U' L2 U",
+    'Е': f"U R2 U' M2 U R2 U'",
+    'К': f"M2 D U R2 U' M' U R2 U' M D'",
+    'Р': f"B L B' M2 B L' B'",
+    'Х': f"B' R' B M2 B' R B",
+    'С': f"L B L' B' M2 B L B' L'",
+    'М': f"U' L U M2 U' L' U",
+    'П': f"B L2' B' M2 B L2 B'",
+    'З': f"U' L' U M2 U' L U",
+    'Ц': f"R' B' R B M2 B' R' B R",
+    'Л': f"U R' U' M2 U R U'",
+    'Ф': f"B' R2 B M2 B' R2 B",
+    'Д': f"U R U' M2 U R' U'",
+  }
+  result=[]
+  opposite_map = {
+        "В": "Ш", "Ш": "В",
+        "Є": "К", "К": "Є"
+    }
+    
+  result = []
+  
+  for i, letter in enumerate(edge_letters):
+      if i % 2 != 0 and letter in opposite_map:
+          target_algorithm = SET_UP_MOVES[opposite_map[letter]]
+          result.append((letter, target_algorithm))
+      else:
+          result.append((letter, SET_UP_MOVES[letter]))
+          
+  return result
+
+def Get_full_solution_m2( edges,corners, parity=False):
+    result = ""
+    parity_alg=m2_parity()
+    for _, alg in corners:
+        result += alg + " "
+    if parity==True:
+      result += parity_alg+ " "
+
+    for _, alg in edges:
+        result += alg + " "
+
+
+    return result.strip()
+  
+def m2_parity():
+  return "D' L2 D M2 D' L2 D"

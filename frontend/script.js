@@ -745,16 +745,16 @@ class StepController {
   _buildSteps(data) {
     const steps = [];
 
-    (data.corner_solution || []).forEach(([letter, alg]) => {
-      steps.push({ type: "corner", label: letter, alg });
+    (data.edge_solution || []).forEach(([letter, alg]) => {
+      steps.push({ type: "edge", label: letter, alg });
     });
 
     if (data.parity) {
       steps.push({ type: "parity", label: "Parity", alg: data.parity });
     }
 
-    (data.edge_solution || []).forEach(([letter, alg]) => {
-      steps.push({ type: "edge", label: letter, alg });
+    (data.corner_solution || []).forEach(([letter, alg]) => {
+      steps.push({ type: "corner", label: letter, alg });
     });
 
     return steps;
@@ -825,10 +825,10 @@ class StepController {
       const step = this.steps[this.currentStep];
       if (tagEl) {
         tagEl.textContent =
-          step.type === "corner"
-            ? "КУТ"
-            : step.type === "edge"
-              ? "РЕБРО"
+          step.type === "edge"
+            ? "РЕБРО"
+            : step.type === "corner"
+              ? "КУТ"
               : "PARITY";
         tagEl.className = `step-type-tag ${step.type}`;
       }
@@ -910,12 +910,12 @@ function displayResults(data, controller) {
   seqCard.innerHTML = `
     <div class="result-card-title">Послідовності літер</div>
     <div class="seq-row">
-      <span class="seq-label">Кути:</span>
-      <span class="seq-value">${fmt(data.corner_letter_seq)}</span>
-    </div>
-    <div class="seq-row">
       <span class="seq-label">Ребра:</span>
       <span class="seq-value">${fmt(data.edge_letter_seq)}</span>
+    </div>
+    <div class="seq-row">
+      <span class="seq-label">Кути:</span>
+      <span class="seq-value">${fmt(data.corner_letter_seq)}</span>
     </div>
   `;
   container.appendChild(seqCard);
@@ -933,14 +933,14 @@ function displayResults(data, controller) {
 
   /* Build a combined ordered list identical to what StepController uses */
   const allSteps = [];
-  (data.corner_solution || []).forEach(([l, a]) =>
-    allSteps.push({ type: "corner", label: l, alg: a }),
+  (data.edge_solution || []).forEach(([l, a]) =>
+    allSteps.push({ type: "edge", label: l, alg: a }),
   );
   if (data.parity) {
     allSteps.push({ type: "parity", label: "Parity", alg: data.parity });
   }
-  (data.edge_solution || []).forEach(([l, a]) =>
-    allSteps.push({ type: "edge", label: l, alg: a }),
+  (data.corner_solution || []).forEach(([l, a]) =>
+    allSteps.push({ type: "corner", label: l, alg: a }),
   );
 
   allSteps.forEach((step, i) => {

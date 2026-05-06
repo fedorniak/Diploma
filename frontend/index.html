@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="uk">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Old Pochmann BLD Solver</title>
+    <title>BLD Solver</title>
 
     <!-- Fonts: Oxanium (display) + JetBrains Mono (code) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -20,14 +20,46 @@
       <div class="header-inner">
         <div class="header-cube-icon">
           <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-            <rect x="2" y="10" width="13" height="13" rx="2" fill="#4a78ff" opacity="0.9"/>
-            <rect x="17" y="10" width="13" height="13" rx="2" fill="#4ad8ff" opacity="0.7"/>
-            <rect x="9.5" y="2" width="13" height="10" rx="2" fill="#4a78ff" opacity="0.5"/>
-            <rect x="9.5" y="21" width="13" height="9" rx="2" fill="#4a78ff" opacity="0.3"/>
+            <rect
+              x="2"
+              y="10"
+              width="13"
+              height="13"
+              rx="2"
+              fill="#4a78ff"
+              opacity="0.9"
+            />
+            <rect
+              x="17"
+              y="10"
+              width="13"
+              height="13"
+              rx="2"
+              fill="#4ad8ff"
+              opacity="0.7"
+            />
+            <rect
+              x="9.5"
+              y="2"
+              width="13"
+              height="10"
+              rx="2"
+              fill="#4a78ff"
+              opacity="0.5"
+            />
+            <rect
+              x="9.5"
+              y="21"
+              width="13"
+              height="9"
+              rx="2"
+              fill="#4a78ff"
+              opacity="0.3"
+            />
           </svg>
         </div>
         <div class="header-text">
-          <h1>Old Pochmann</h1>
+          <h1>OP/M2</h1>
           <span class="header-sub">BLD Cube Solver</span>
         </div>
         <div class="header-badge">3x3 BLD</div>
@@ -36,7 +68,6 @@
 
     <!-- ========== MAIN APP ========== -->
     <main class="app-layout">
-
       <!-- ======= LEFT PANEL: Cube Input ======= -->
       <section class="panel input-panel">
         <div class="panel-header">
@@ -47,7 +78,6 @@
 
         <!-- Rubik's Cube Face Layout (structure preserved exactly) -->
         <div class="cube-wrapper">
-
           <!-- Blue face (B) — top -->
           <div class="face-row">
             <div class="face B">
@@ -136,26 +166,68 @@
         <div class="palette-section">
           <div class="palette-label">Активний колір:</div>
           <div class="palette" id="palette">
-            <div class="color-box" data-code="R" title="Red (Червоний)"   style="background:#e82020"></div>
-            <div class="color-box" data-code="G" title="Green (Зелений)"  style="background:#00a820"></div>
-            <div class="color-box" data-code="B" title="Blue (Синій)"     style="background:#1040ff"></div>
-            <div class="color-box" data-code="O" title="Orange (Помаранч)" style="background:#ff8c00"></div>
-            <div class="color-box" data-code="W" title="White (Білий)"    style="background:#f0f0f0; border:1px solid #555"></div>
-            <div class="color-box" data-code="Y" title="Yellow (Жовтий)"  style="background:#ffe000"></div>
+            <div
+              class="color-box"
+              data-code="R"
+              title="Red (Червоний)"
+              style="background: #e82020"
+            ></div>
+            <div
+              class="color-box"
+              data-code="G"
+              title="Green (Зелений)"
+              style="background: #00a820"
+            ></div>
+            <div
+              class="color-box"
+              data-code="B"
+              title="Blue (Синій)"
+              style="background: #1040ff"
+            ></div>
+            <div
+              class="color-box"
+              data-code="O"
+              title="Orange (Помаранч)"
+              style="background: #ff8c00"
+            ></div>
+            <div
+              class="color-box"
+              data-code="W"
+              title="White (Білий)"
+              style="background: #f0f0f0; border: 1px solid #555"
+            ></div>
+            <div
+              class="color-box"
+              data-code="Y"
+              title="Yellow (Жовтий)"
+              style="background: #ffe000"
+            ></div>
           </div>
         </div>
 
         <!-- Action Buttons -->
         <div class="action-row">
           <button id="sendColors" class="btn btn-primary">
-            <svg class="btn-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
-              <polygon points="3,2 14,8 3,14"/>
+            <svg
+              class="btn-icon"
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <polygon points="3,2 14,8 3,14" />
             </svg>
             Розв'язати
           </button>
           <button id="clearColors" class="btn btn-ghost">
-            <svg class="btn-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M2 4h12M6 4V2h4v2M5 4v9a1 1 0 001 1h4a1 1 0 001-1V4"/>
+            <svg
+              class="btn-icon"
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M2 4h12M6 4V2h4v2M5 4v9a1 1 0 001 1h4a1 1 0 001-1V4" />
             </svg>
             Очистити
           </button>
@@ -165,7 +237,6 @@
 
       <!-- ======= RIGHT PANEL: Visualisation + Results ======= -->
       <section class="panel results-panel" id="resultsPanel">
-
         <!-- 3D Visualization -->
         <div class="panel-header">
           <span class="panel-num">02</span>
@@ -176,11 +247,49 @@
           <!-- Three.js canvas container -->
           <div id="cubeCanvas" class="cube-canvas">
             <div class="canvas-placeholder">
-              <svg width="48" height="48" viewBox="0 0 48 48" fill="none" opacity="0.3">
-                <rect x="4" y="16" width="19" height="19" rx="3" stroke="#4a78ff" stroke-width="2"/>
-                <rect x="25" y="16" width="19" height="19" rx="3" stroke="#4a78ff" stroke-width="2"/>
-                <rect x="14" y="3" width="19" height="15" rx="3" stroke="#4a78ff" stroke-width="2"/>
-                <rect x="14" y="33" width="19" height="12" rx="3" stroke="#4a78ff" stroke-width="2"/>
+              <svg
+                width="48"
+                height="48"
+                viewBox="0 0 48 48"
+                fill="none"
+                opacity="0.3"
+              >
+                <rect
+                  x="4"
+                  y="16"
+                  width="19"
+                  height="19"
+                  rx="3"
+                  stroke="#4a78ff"
+                  stroke-width="2"
+                />
+                <rect
+                  x="25"
+                  y="16"
+                  width="19"
+                  height="19"
+                  rx="3"
+                  stroke="#4a78ff"
+                  stroke-width="2"
+                />
+                <rect
+                  x="14"
+                  y="3"
+                  width="19"
+                  height="15"
+                  rx="3"
+                  stroke="#4a78ff"
+                  stroke-width="2"
+                />
+                <rect
+                  x="14"
+                  y="33"
+                  width="19"
+                  height="12"
+                  rx="3"
+                  stroke="#4a78ff"
+                  stroke-width="2"
+                />
               </svg>
               <p>Розв'яжіть куб, щоб побачити анімацію</p>
             </div>
@@ -197,16 +306,30 @@
             <div class="step-detail-row">
               <span class="step-type-tag" id="stepTypeTag">—</span>
               <span class="step-letter-display" id="stepLetter">—</span>
-              <code class="step-alg-display" id="stepAlg">Розв'яжіть куб для початку</code>
+              <code class="step-alg-display" id="stepAlg"
+                >Розв'яжіть куб для початку</code
+              >
             </div>
           </div>
 
           <!-- Playback controls -->
           <div class="viz-controls" id="vizControls">
-            <button class="ctrl-btn" id="ctrlReset" title="На початок">⏮</button>
-            <button class="ctrl-btn" id="ctrlPrev" title="Попередній крок">◀</button>
-            <button class="ctrl-btn ctrl-play" id="ctrlPlay" title="Відтворити / Пауза">▶</button>
-            <button class="ctrl-btn" id="ctrlNext" title="Наступний крок">▶</button>
+            <button class="ctrl-btn" id="ctrlReset" title="На початок">
+              ⏮
+            </button>
+            <button class="ctrl-btn" id="ctrlPrev" title="Попередній крок">
+              ◀
+            </button>
+            <button
+              class="ctrl-btn ctrl-play"
+              id="ctrlPlay"
+              title="Відтворити / Пауза"
+            >
+              ▶
+            </button>
+            <button class="ctrl-btn" id="ctrlNext" title="Наступний крок">
+              ▶
+            </button>
             <button class="ctrl-btn" id="ctrlEnd" title="До кінця">⏭</button>
             <div class="speed-wrap">
               <span class="speed-label">Швидкість</span>
@@ -218,7 +341,7 @@
         <!-- /viz-block -->
 
         <!-- Solution Results -->
-        <div class="panel-header" style="margin-top:32px">
+        <div class="panel-header" style="margin-top: 32px">
           <span class="panel-num">03</span>
           <h2>Рішення</h2>
         </div>
@@ -226,15 +349,12 @@
         <div id="resultsContainer"></div>
       </section>
       <!-- /results-panel -->
-
     </main>
 
     <footer class="app-footer">
       <span class="footer-author">Федорняк Сергій</span>
       <span class="footer-sep">·</span>
       <span>Old Pochmann BLD Solver</span>
-      <span class="footer-sep">·</span>
-      <span>Three.js r128</span>
     </footer>
 
     <!-- Three.js from CDN (r128) -->
