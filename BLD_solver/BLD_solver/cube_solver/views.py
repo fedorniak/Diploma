@@ -16,7 +16,6 @@ from .memo_builder import (
     Get_reverse_solution,
     m2_parity,
     Get_edges_algorithm_m2,
-    Get_full_solution_m2,
     
     )
 
@@ -103,7 +102,7 @@ def solve_rubiks_cube_view(request):
                 parity = R_Perm()
             else:
                 parity=m2_parity()
-        full_solution = Get_full_solution(corners_solution, edges_solution,  parity=bool(parity))
+        full_solution = Get_full_solution(corners_solution, edges_solution,  edges_method, parity=bool(parity),)
         reverse_solution = Get_reverse_solution(full_solution)
         return JsonResponse({
             'corner_solution': corners_solution,

@@ -150,9 +150,12 @@ def Get_corner_algorithm(corner_letters):
       result.append((letter, SET_UP_MOVES[letter]))
   return result
 
-def Get_full_solution(corners, edges, parity=False):
+def Get_full_solution(corners, edges, edges_method, parity=False,):
     result = ""
-    parity_alg=m2_parity()
+    if edges_method=="OP":
+      parity_alg=R_Perm()
+    else:
+      parity_alg=m2_parity()
     for _, alg in edges:
         result += alg + " "
     if parity==True:
@@ -238,19 +241,7 @@ def Get_edges_algorithm_m2(edge_letters):
           
   return result
 
-def Get_full_solution_m2( edges,corners, parity=False):
-    result = ""
-    parity_alg=m2_parity()
-    for _, alg in corners:
-        result += alg + " "
-    if parity==True:
-      result += parity_alg+ " "
 
-    for _, alg in edges:
-        result += alg + " "
-
-
-    return result.strip()
   
 def m2_parity():
   return "D' L2 D M2 D' L2 D"
