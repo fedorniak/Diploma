@@ -68,7 +68,36 @@ const MOVE_DEFS = {
   y: { axis: "y", layers: [-1, 0, 1], angle: -Math.PI / 2 },
   z: { axis: "z", layers: [-1, 0, 1], angle: -Math.PI / 2 },
 };
+/* ============================================================
+ * TOAST SYSTEM (CUSTOM ALERTS)
+ * ============================================================ */
+function showToast(message, type = "error") {
+  const container = document.getElementById("toast-container");
+  if (!container) return;
 
+  const toast = document.createElement("div");
+  toast.className = `custom-toast ${type}`;
+
+  toast.innerHTML = `
+    <span class="toast-message">${message}</span>
+    <button class="toast-close">&times;</button>
+  `;
+
+  container.appendChild(toast);
+
+  // Автоматичне видалення через 5 секунд
+  const timer = setTimeout(() => {
+    toast.classList.add("fade-out");
+    setTimeout(() => toast.remove(), 300);
+  }, 5000);
+
+  // Закриття по кліку на хрестик
+  toast.querySelector(".toast-close").addEventListener("click", () => {
+    clearTimeout(timer);
+    toast.classList.add("fade-out");
+    setTimeout(() => toast.remove(), 300);
+  });
+}
 /* ============================================================
  * SECTION 2 — COLOUR PICKER UI  (original logic preserved)
  * ============================================================ */
@@ -92,7 +121,7 @@ document.querySelectorAll(".cell").forEach((cell) => {
 
   cell.addEventListener("click", () => {
     if (!selectedColorCode) {
-      alert("Спочатку виберіть колір із палітри");
+      showToast("Спочатку виберіть колір із палітри", "warning");
       return;
     }
 
@@ -236,13 +265,26 @@ function checkColorConflicts(cornerColors, edgeColors) {
 function validateCubeInput(corners, edges) {
   const colors = ["R", "G", "B", "O", "W", "Y"];
 
+  // Словник для перекладу кольорів в алертах
+  const colorNamesUA = {
+    R: "Червоний",
+    G: "Зелений",
+    B: "Синій",
+    O: "Помаранчевий",
+    W: "Білий",
+    Y: "Жовтий",
+  };
+
   if (corners.includes("X") || edges.includes("X")) {
-    alert("Всі клітинки кути і ребра повинні бути заповнені кольорами.");
+    showToast(
+      "Всі клітинки кути і ребра повинні бути заповнені кольорами.",
+      "error",
+    );
     return false;
   }
 
   if (corners.length !== 24 || edges.length !== 24) {
-    alert("Некоректна довжина рядків кутів або ребер.");
+    showToast("Некоректна довжина рядків кутів або ребер.", "error");
     return false;
   }
 
@@ -253,7 +295,7 @@ function validateCubeInput(corners, edges) {
       if (Object.prototype.hasOwnProperty.call(counts, ch)) {
         counts[ch]++;
       } else {
-        alert("Знайдено недопустимий колір: " + ch);
+        showToast("Знайдено недопустимий колір: " + ch, "error");
         return null;
       }
     }
@@ -268,20 +310,23 @@ function validateCubeInput(corners, edges) {
 
   for (const c of colors) {
     if (cornerCounts[c] !== 4) {
-      alert(
-        `Колір ${c} зустрічається у кутах не 4 рази, а ${cornerCounts[c]}.`,
+      showToast(
+        `Колір <b>${colorNamesUA[c]}</b> зустрічається у кутах не 4 рази, а ${cornerCounts[c]}.`,
+        "error",
       );
       return false;
     }
     if (edgeCounts[c] !== 4) {
-      alert(`Колір ${c} зустрічається у ребрах не 4 рази, а ${edgeCounts[c]}.`);
+      showToast(
+        `Колір <b>${colorNamesUA[c]}</b> зустрічається у ребрах не 4 рази, а ${edgeCounts[c]}.`,
+        "error",
+      );
       return false;
     }
   }
 
   return true;
 }
-
 /* ============================================================
  * SECTION 5 — RUBIKS CUBE VISUALIZER  (Three.js)
  * ============================================================ */
@@ -1023,7 +1068,7 @@ document.getElementById("sendColors").addEventListener("click", () => {
     })
     .then((data) => {
       if (data.error) {
-        alert("Неправильно введений кубик");
+        showToast("Неправильно введений кубик", "error");
         return;
       }
 
