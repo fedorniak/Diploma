@@ -76,36 +76,39 @@ def solve_rubiks_cube_view(request):
         data = json.loads(request.body)
         corners_str = data.get('corners')
         edges_str = data.get('edges')
+        edges_method=data.get('edges_method')
         print(edges_str)
         if not corners_str or not edges_str:
             return JsonResponse({'error': 'Missing corners or edges input.'}, status=400)
+        print(edges_method)
         corners = fill_corners_from_string(corners_str)
         edges = fill_edges_from_string(edges_str)
-        print("corners:")
-        print(corners)
-        print("edges:")
-        print(edges)
         corner_cycles = solve_corners(corners)
-        edge_cycles = solve_edges_m2(edges)
-        print(f'corn_c:{corner_cycles}')
-        print(f'edge_c: {edge_cycles}')
+        if edges_method=="OP":
+            edge_cycles = solve_edges(edges)
+        else:
+            edge_cycles = solve_edges_m2(edges)
+
         corner_letter_seq = build_corner_letter_sequence(corner_cycles)
         edge_letter_seq = build_edge_letter_sequence(edge_cycles)
         corners_solution = Get_corner_algorithm(corner_letter_seq)
-        edges_solution = Get_edges_algorithm_m2(edge_letter_seq)
-        print("солюшн є")
+        if edges_method=="OP":
+            edges_solution = Get_edges_algorithm(edge_letter_seq)
+        else:
+            edges_solution = Get_edges_algorithm_m2(edge_letter_seq)
+              
         parity = None
         if len(corner_letter_seq) % 2 == 1 or len(edge_letter_seq) % 2 == 1:
-            parity = m2_parity()
-        print("паріті")
+            if edges_method=="OP":
+                parity = R_Perm()
+            else:
+                parity=m2_parity()
         full_solution = Get_full_solution(corners_solution, edges_solution,  parity=bool(parity))
-        print("фул сол є")
         reverse_solution = Get_reverse_solution(full_solution)
-        print("всьо гуд")
         return JsonResponse({
             'corner_solution': corners_solution,
             'edge_solution': edges_solution,
-            'parity': None if parity is None else f"{m2_parity()}",
+            'parity': None if parity is None else parity,
             'corner_letter_seq': corner_letter_seq,
             'edge_letter_seq': edge_letter_seq,
             'reverse_solution': reverse_solution,

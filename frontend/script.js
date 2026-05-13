@@ -119,6 +119,26 @@ document.querySelectorAll(".cell").forEach((cell) => {
   });
 });
 
+let selectedEdgeMethod = "M2"; // Значення за замовчуванням
+
+document.querySelectorAll(".edge-method-btn").forEach((btn) => {
+  btn.addEventListener("click", (e) => {
+    // Забираємо клас active у всіх кнопок ребер
+    document
+      .querySelectorAll(".edge-method-btn")
+      .forEach((b) => b.classList.remove("active"));
+    // Додаємо клас active на клікнуту
+    e.target.classList.add("active");
+    // Зберігаємо обраний метод
+    selectedEdgeMethod = e.target.getAttribute("data-method");
+
+    // Оновлюємо заголовок (H1), щоб показувати поточні методи
+    const headerTitle = document.querySelector(".header-text h1");
+    if (headerTitle) {
+      headerTitle.textContent = `OP/${selectedEdgeMethod}`;
+    }
+  });
+});
 /* ============================================================
  * SECTION 3 — CUBE DATA COLLECTION  (original logic preserved)
  * ============================================================ */
@@ -991,7 +1011,11 @@ document.getElementById("sendColors").addEventListener("click", () => {
   fetch("http://127.0.0.1:8000/api/solve/", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ corners, edges }),
+    body: JSON.stringify({
+      corners: corners,
+      edges: edges,
+      edges_method: selectedEdgeMethod,
+    }),
   })
     .then((res) => {
       if (!res.ok) throw new Error("Неправильно введений кубик");
