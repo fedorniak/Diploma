@@ -197,8 +197,6 @@ def fill_corners_from_string(corners_str):
 
     return corners
 
-
-
 def solve_edges(edges):
     solved = []
     result = []
@@ -369,16 +367,11 @@ def fill_edges_from_string(edges_str):
 
     return edges
 
-
-
-
-
 def solve_edges_m2(edges):
     solved = []
     result = []
     counter = 0
-    
-    # Змінено: перевіряємо всі ребра з 1 по 12, але пропускаємо буфер (9)
+
     for idx in range(1, len(edges) + 1):
         if idx == 9:
             continue
@@ -390,7 +383,6 @@ def solve_edges_m2(edges):
             
     while True:
         counter += 1
-        # Змінено: беремо значення з нового буфера (9)
         edge = edges[9]
         key = list(edge[0].values())[0]
         val1 = list(edge[1].values())[0]
@@ -400,7 +392,6 @@ def solve_edges_m2(edges):
 
         for idx, item in edges.items():
             keys_in_row = {list(d.keys())[0] for d in item}
-            # Змінено: перевіряємо чи елемент належить буферу (9)
             if key in keys_in_row and val1 in keys_in_row and idx == 9:
                 found_spot = None
                 for k, v in edges.items():
