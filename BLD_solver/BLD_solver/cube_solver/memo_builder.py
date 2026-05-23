@@ -1,4 +1,6 @@
 from pprint import pprint
+import csv
+from django.conf import settings
 
 def T_perm():
   return "R U R' U' R' F R2 U' R' U' R U R' F'"
@@ -167,20 +169,7 @@ def Get_full_solution(corners, edges, edges_method, parity=False,):
 
     return result.strip()
 
-# def Get_full_solution_m2( edges,corners, parity=False):
-#     result = ""
-#     parity_alg=m2_parity
-#     for _, alg in corners:
-#         result += alg + " "
-#     if parity==True:
-#       result += parity_alg+ " "
 
-#     for _, alg in edges:
-#         result += alg + " "
-
-
-#     return result.strip() 
-  
 def Get_reverse_solution(solution):
     moves = solution.strip().split()
     reversed_moves = []
@@ -228,8 +217,7 @@ def Get_edges_algorithm_m2(edge_letters):
   opposite_map = {
         "В": "Ш", "Ш": "В",
         "Є": "К", "К": "Є"
-    }
-    
+    } 
   result = []
   
   for i, letter in enumerate(edge_letters):
@@ -245,3 +233,60 @@ def Get_edges_algorithm_m2(edge_letters):
   
 def m2_parity():
   return "D' L2 D M2 D' L2 D"
+
+def letters_to_words(sequence, table):
+  # print("початок функції")
+  # print("TABLE TYPE:", type(table))
+  # print("TABLE NONE?", table is None)
+  result = []
+  i = 0
+  while i < len(sequence):
+      if i + 1 >= len(sequence):
+          result.append(sequence[i])
+          break
+
+      first = sequence[i]
+      second = sequence[i + 1]
+
+      word = table.get(first, {}).get(second)
+
+      if word:
+          result.append(word)
+      else:
+          result.append(f"{first}{second}")
+
+      i += 2
+
+  return result
+  
+from functools import lru_cache
+import csv
+from django.conf import settings
+
+@lru_cache
+def get_memo_table():
+    table = {}
+
+    with open(settings.MEMO_FILE_PATH, "r", encoding="utf-8") as file:
+        reader = csv.reader(file)
+        rows = list(reader)
+        headers = rows[0]
+
+        for row in rows[1:]:
+            if not row or not row[0]:
+                continue
+
+            table[row[0]] = {}
+
+            for i in range(1, len(headers)):
+                if i < len(row) and row[i]:
+                    table[row[0]][headers[i]] = row[i]
+
+    return table
+                
+MEMO_TABLE = None
+
+def set_memo_table(table):
+    global MEMO_TABLE
+    MEMO_TABLE = table
+    
