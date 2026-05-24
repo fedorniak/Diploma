@@ -912,6 +912,435 @@ body {
 }
 
 /* ============================================================
+ * HEADER LAYOUT BUTTON
+ * ============================================================ */
+.header-layout-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  background: var(--surface-up);
+  border: 1px solid var(--border-bright);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 6px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.header-layout-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-dim);
+  box-shadow: 0 0 8px var(--accent-glow);
+}
+.header-badge {
+  margin-left: 0 !important; /* reset old margin-left:auto since btn now carries it */
+}
+
+/* ============================================================
+ * LAYOUT MODAL
+ * ============================================================ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(7, 11, 24, 0.85);
+  backdrop-filter: blur(6px);
+  z-index: 9000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease;
+}
+.modal-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+.modal-panel {
+  background: var(--surface);
+  border: 1px solid var(--border-bright);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 800px; /* Збільшено з 680px */
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow:
+    0 0 0 1px rgba(74, 120, 255, 0.15),
+    0 24px 64px rgba(0, 0, 0, 0.6);
+  transform: translateY(12px) scale(0.98);
+  transition: transform 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.modal-overlay.open .modal-panel {
+  transform: translateY(0) scale(1);
+}
+.modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+.modal-header::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent) 0%, var(--accent-2) 100%);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  opacity: 0.8;
+}
+.modal-title-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.modal-icon {
+  font-size: 20px;
+}
+.modal-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.3px;
+}
+.modal-subtitle {
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  letter-spacing: 1px;
+}
+.modal-close {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  transition: all var(--transition);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modal-close:hover {
+  border-color: var(--highlight);
+  color: var(--highlight);
+  background: var(--highlight-dim);
+}
+.modal-body {
+  padding: 20px 24px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Face colour legend */
+.layout-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.legend-item {
+  font-size: 11px;
+  font-family: var(--font-mono);
+  padding: 3px 9px;
+  border-radius: 20px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+.legend-blue {
+  background: rgba(16, 64, 255, 0.25);
+  color: #6ea0ff;
+  border: 1px solid rgba(16, 64, 255, 0.4);
+}
+.legend-white {
+  background: rgba(240, 240, 240, 0.12);
+  color: #d0d8f8;
+  border: 1px solid rgba(240, 240, 240, 0.3);
+}
+.legend-red {
+  background: rgba(232, 32, 32, 0.18);
+  color: #ff7070;
+  border: 1px solid rgba(232, 32, 32, 0.4);
+}
+.legend-orange {
+  background: rgba(255, 140, 0, 0.18);
+  color: #ffa040;
+  border: 1px solid rgba(255, 140, 0, 0.4);
+}
+.legend-green {
+  background: rgba(0, 168, 32, 0.18);
+  color: #40d060;
+  border: 1px solid rgba(0, 168, 32, 0.4);
+}
+.legend-yellow {
+  background: rgba(255, 224, 0, 0.15);
+  color: #ffe040;
+  border: 1px solid rgba(255, 224, 0, 0.35);
+}
+
+/* Cube Net Grid */
+.cube-net {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  align-items: center; /* Відцентровує саму розгортку */
+  margin: 0 auto;
+}
+.net-row {
+  display: flex;
+  gap: 3px;
+  align-items: flex-start;
+}
+.net-spacer {
+  width: 112px; /* Збільшено (3*34px + відступи) */
+  height: 112px;
+  flex-shrink: 0;
+}
+.net-face {
+  display: grid;
+  grid-template-columns: repeat(3, 34px); /* Збільшено розмір комірок з 26px */
+  grid-template-rows: repeat(3, 34px);
+  gap: 2px;
+  padding: 3px;
+  border-radius: 6px;
+  border: 1px solid var(--border-bright);
+  background: var(
+    --surface-high
+  ); /* Робимо фон граней нейтральним, як на основному кубі */
+  flex-shrink: 0;
+}
+
+.net-cell {
+  width: 34px; /* Збільшено з 26px */
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 14px; /* Збільшено шрифт для кращої видимості */
+  font-weight: 700;
+  border-radius: 4px;
+  user-select: none;
+  /* Додаємо легку тінь для ефекту пластикової наліпки */
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.15);
+}
+.net-cell.center {
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  opacity: 0.9;
+}
+
+/* --- ІДЕНТИЧНІ КОЛЬОРИ НАЛІПОК --- */
+
+/* Синя грань */
+.net-face--blue .net-cell.corner,
+.net-face--blue .net-cell.edge,
+.net-face--blue .net-cell.center {
+  background: #1040ff;
+  color: #ffffff;
+}
+
+/* Біла грань (додано темнішу рамку для контрасту з білим) */
+.net-face--white .net-cell.corner,
+.net-face--white .net-cell.edge,
+.net-face--white .net-cell.center {
+  background: #f0f0f0;
+  color: #000000;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.3);
+}
+
+/* Червона грань */
+.net-face--red .net-cell.corner,
+.net-face--red .net-cell.edge,
+.net-face--red .net-cell.center {
+  background: #e82020;
+  color: #ffffff;
+}
+
+/* Помаранчева грань (чорний текст для кращої читабельності) */
+.net-face--orange .net-cell.corner,
+.net-face--orange .net-cell.edge,
+.net-face--orange .net-cell.center {
+  background: #ff8c00;
+  color: #000000;
+}
+
+/* Зелена грань */
+.net-face--green .net-cell.corner,
+.net-face--green .net-cell.edge,
+.net-face--green .net-cell.center {
+  background: #00a820;
+  color: #ffffff;
+}
+
+/* Жовта грань (чорний текст) */
+.net-face--yellow .net-cell.corner,
+.net-face--yellow .net-cell.edge,
+.net-face--yellow .net-cell.center {
+  background: #ffe000;
+  color: #000000;
+}
+
+/* Piece type legend */
+.net-piece-legend {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.piece-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+}
+.piece-swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+.piece-corner {
+  background: rgba(74, 120, 255, 0.45);
+}
+.piece-edge {
+  background: rgba(74, 120, 255, 0.22);
+}
+.piece-center {
+  background: rgba(74, 120, 255, 0.6);
+}
+
+/* ============================================================
+ * SUB-MOVE CONTROLS
+ * ============================================================ */
+.ctrl-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.ctrl-group--move {
+  gap: 4px;
+}
+.ctrl-group-label {
+  font-size: 10px;
+  font-family: var(--font-mono);
+  color: var(--text-dim);
+  letter-spacing: 1px;
+  white-space: nowrap;
+  margin-right: 2px;
+}
+.ctrl-divider {
+  width: 1px;
+  height: 28px;
+  background: var(--border-bright);
+  margin: 0 4px;
+  flex-shrink: 0;
+}
+.ctrl-btn--sub {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--accent-2) !important;
+  border-color: rgba(74, 216, 255, 0.3) !important;
+  background: rgba(74, 216, 255, 0.06) !important;
+  width: 34px;
+  height: 34px;
+}
+.ctrl-btn--sub:hover {
+  border-color: var(--accent-2) !important;
+  background: rgba(74, 216, 255, 0.15) !important;
+  box-shadow: 0 0 8px rgba(74, 216, 255, 0.25);
+}
+.ctrl-btn--sub:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+}
+
+/* Highlighted move token inside alg display */
+.move-token {
+  display: inline-block;
+  padding: 0 2px;
+  border-radius: 3px;
+  transition:
+    background 0.1s,
+    color 0.1s;
+}
+.move-token.move-done {
+  color: var(--text-dim);
+}
+.move-token.move-active {
+  background: rgba(74, 216, 255, 0.25);
+  color: var(--accent-2);
+  box-shadow: 0 0 6px rgba(74, 216, 255, 0.3);
+}
+.move-token.move-pending {
+  color: var(--text-muted);
+}
+
+/* Move sub-counter in step info bar */
+.step-move-counter {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--accent-2);
+  font-weight: 700;
+  letter-spacing: 1px;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.step-move-counter.visible {
+  opacity: 1;
+}
+
+/* ============================================================
+ * MEMO DISPLAY in seq-card
+ * ============================================================ */
+.memo-block {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+.memo-label {
+  font-size: 10px;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 4px;
+}
+.memo-value {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 2px;
+  word-break: break-all;
+}
+.memo-value.memo-corners {
+  color: var(--corner-color);
+}
+.memo-value.memo-edges {
+  color: var(--edge-color);
+}
+
+/* ============================================================
  * TOAST NOTIFICATIONS (ALERTS)
  * ============================================================ */
 .toast-container {

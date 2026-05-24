@@ -38,8 +38,7 @@ def solve_corners(corners):
                             sol=set(lst)
                             if keys==sol:
                                 match=True
-                                break
-                            
+                                break    
                     if match==False:
                         found_spot=key
                         break
@@ -47,11 +46,9 @@ def solve_corners(corners):
                 if found_spot==None:
                     should_exit = True
                     break
-
                 key = list(corners[found_spot][0].values())[0]  
                 values = [list(item.values())[0] for item in corners[found_spot][1:]]  
                 new_buffer = {key: values}  
-
                 pos_key = list(corners[found_spot][0].keys())[0]  
                 pos_keys = [list(item.keys())[0] for item in corners[found_spot][1:]]  
                 pos_buffer = {pos_key: pos_keys}
@@ -126,7 +123,6 @@ def solve_corners(corners):
                             updated_first_row.append({key_in_item: val33})  
                 
                 corners[1] = updated_first_row
-
                 solved.append(buffer)
                 result.append(buffer)
                 break
@@ -134,7 +130,6 @@ def solve_corners(corners):
             break
         if counter>20:
             raise ValueError("Неправильно введений кубик")
-
     res=solve_corner_flips(corners,result)
     return res
   
@@ -229,40 +224,32 @@ def solve_edges(edges):
                     else:
                         found_spot = k
                         break
-
                 if found_spot is None:
                     should_exit = True
                     break
-
                 new_key = list(edges[found_spot][0].values())[0]
                 new_val = list(edges[found_spot][1].values())[0]
                 new_buffer = {new_key: [new_val]}
-
                 pos_key = list(edges[found_spot][0].keys())[0]
                 pos_val = list(edges[found_spot][1].keys())[0]
                 pos_buffer = {pos_key: [pos_val]}
-
                 keys = [list(d.keys())[0] for d in edges[found_spot]]
                 values = [key, val1]
                 updated_row = [{k: v} for k, v in zip(keys, values)]
                 edges[found_spot] = updated_row
-
                 edges[1] = [
                     {list(edges[1][0].keys())[0]: new_key},
                     {list(edges[1][1].keys())[0]: new_val},
                 ]
-
                 result.append(pos_buffer)
                 break
 
             elif key in keys_in_row and val1 in keys_in_row:
                 num = idx
                 break
-
         if num is not None:
             found_row = edges[num]
             new_buffer = {}
-
             for key_in_buffer, val_list in buffer.items():
                 for item in found_row:
                     if key_in_buffer in item:
@@ -371,7 +358,6 @@ def solve_edges_m2(edges):
     solved = []
     result = []
     counter = 0
-
     for idx in range(1, len(edges) + 1):
         if idx == 9:
             continue
@@ -379,8 +365,7 @@ def solve_edges_m2(edges):
         keys = [list(d.keys())[0] for d in edge]
         values = [list(d.values())[0] for d in edge]
         if set(keys) == set(values):
-            solved.append({keys[0]: [keys[1]]})
-            
+            solved.append({keys[0]: [keys[1]]})        
     while True:
         counter += 1
         edge = edges[9]
@@ -389,7 +374,6 @@ def solve_edges_m2(edges):
         buffer = {key: [val1]}
         should_exit = False
         num = None
-
         for idx, item in edges.items():
             keys_in_row = {list(d.keys())[0] for d in item}
             if key in keys_in_row and val1 in keys_in_row and idx == 9:
@@ -403,36 +387,29 @@ def solve_edges_m2(edges):
                     else:
                         found_spot = k
                         break
-
                 if found_spot is None:
                     should_exit = True
                     break
-
                 new_key = list(edges[found_spot][0].values())[0]
                 new_val = list(edges[found_spot][1].values())[0]
                 new_buffer = {new_key: [new_val]}
-
                 pos_key = list(edges[found_spot][0].keys())[0]
                 pos_val = list(edges[found_spot][1].keys())[0]
                 pos_buffer = {pos_key: [pos_val]}
-
                 keys = [list(d.keys())[0] for d in edges[found_spot]]
                 values = [key, val1]
                 updated_row = [{k: v} for k, v in zip(keys, values)]
                 edges[found_spot] = updated_row
-
                 edges[9] = [
                     {list(edges[9][0].keys())[0]: new_key},
                     {list(edges[9][1].keys())[0]: new_val},
                 ]
-
                 result.append(pos_buffer)
                 break
 
             elif key in keys_in_row and val1 in keys_in_row:
                 num = idx
                 break
-
         if num is not None:
             found_row = edges[num]
             new_buffer = {}

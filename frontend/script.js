@@ -264,8 +264,6 @@ function checkColorConflicts(cornerColors, edgeColors) {
  */
 function validateCubeInput(corners, edges) {
   const colors = ["R", "G", "B", "O", "W", "Y"];
-
-  // Словник для перекладу кольорів в алертах
   const colorNamesUA = {
     R: "Червоний",
     G: "Зелений",
@@ -280,11 +278,6 @@ function validateCubeInput(corners, edges) {
       "Всі клітинки кути і ребра повинні бути заповнені кольорами.",
       "error",
     );
-    return false;
-  }
-
-  if (corners.length !== 24 || edges.length !== 24) {
-    showToast("Некоректна довжина рядків кутів або ребер.", "error");
     return false;
   }
 
@@ -349,7 +342,7 @@ class RubiksCubeVisualizer {
     this.cubies = []; // all 27 THREE.Mesh objects
     this.moveQueue = []; // pending animated moves
     this.currentAnim = null; // currently running animation state
-    this.animSpeed = 0.06; // progress fraction per frame (→ speed level 3)
+    this.animSpeed = 0.04; // progress fraction per frame (→ speed level 3)
     this.isDragging = false;
 
     this._init();
@@ -440,14 +433,13 @@ class RubiksCubeVisualizer {
   _makeCubie(x, y, z) {
     const geo = new THREE.BoxGeometry(0.93, 0.93, 0.93);
 
-    /* The 0.04 bevel is simulated by the gap between cubies; no extra geo needed */
     const mats = [
-      this._mat(x === 1 ? CUBE_COLORS.R : CUBE_COLORS.I), // +X → Right → Red
-      this._mat(x === -1 ? CUBE_COLORS.L : CUBE_COLORS.I), // -X → Left  → Orange
-      this._mat(y === 1 ? CUBE_COLORS.U : CUBE_COLORS.I), // +Y → Up    → White
-      this._mat(y === -1 ? CUBE_COLORS.D : CUBE_COLORS.I), // -Y → Down  → Yellow
-      this._mat(z === 1 ? CUBE_COLORS.F : CUBE_COLORS.I), // +Z → Front → Green
-      this._mat(z === -1 ? CUBE_COLORS.B : CUBE_COLORS.I), // -Z → Back  → Blue
+      this._mat(x === 1 ? CUBE_COLORS.R : CUBE_COLORS.I),
+      this._mat(x === -1 ? CUBE_COLORS.L : CUBE_COLORS.I),
+      this._mat(y === 1 ? CUBE_COLORS.U : CUBE_COLORS.I),
+      this._mat(y === -1 ? CUBE_COLORS.D : CUBE_COLORS.I),
+      this._mat(z === 1 ? CUBE_COLORS.F : CUBE_COLORS.I),
+      this._mat(z === -1 ? CUBE_COLORS.B : CUBE_COLORS.I),
     ];
 
     const mesh = new THREE.Mesh(geo, mats);
@@ -525,10 +517,8 @@ class RubiksCubeVisualizer {
     pivot.rotation[axis] = angle;
     pivot.updateMatrixWorld(true);
 
-    /* Detach back to cubeGroup, preserving world transform */
     affected.forEach((c) => {
       this.cubeGroup.attach(c);
-      /* Snap to integer grid to prevent floating-point drift */
       c.position.x = Math.round(c.position.x);
       c.position.y = Math.round(c.position.y);
       c.position.z = Math.round(c.position.z);
@@ -737,47 +727,70 @@ class RubiksCubeVisualizer {
 class StepController {
   constructor(visualizer) {
     this.viz = visualizer;
-    this.steps = []; // { type, label, alg }
+    this.steps = []; // { type, label, alg, moves[] }
     this.currentStep = -1; // -1 = initial (scrambled) state
+    this.currentMoveIndex = -1; // -1 = before any move in current step
     this.reverseAlg = "";
     this.isPlaying = false;
     this._bindControls();
   }
 
-  /* ---- Public API ---- */
-
-  /** Load a new solution from the API response. */
   load(data) {
     this.steps = this._buildSteps(data);
     this.reverseAlg = data.reverse_solution || "";
     this.currentStep = -1;
+    this.currentMoveIndex = -1;
     this._applyInitial();
     this._updateUI();
   }
 
-  /** Advance to the next step (animate it). */
   next() {
-    if (this.currentStep >= this.steps.length - 1) {
+    if (
+      this.currentStep >= this.steps.length - 1 &&
+      (this.currentStep < 0 ||
+        this.currentMoveIndex >= this.steps[this.currentStep].moves.length - 1)
+    ) {
       this._stopPlay();
       return;
     }
-    /* Don't queue another move if one is already animating */
     if (this.viz.moveQueue.length || this.viz.currentAnim) return;
 
-    this.currentStep++;
-    const step = this.steps[this.currentStep];
+    let step = this.currentStep >= 0 ? this.steps[this.currentStep] : null;
+    let movesToQueue = [];
+    let startIndex = 0;
+
+    if (step && this.currentMoveIndex < step.moves.length - 1) {
+      startIndex = this.currentMoveIndex + 1;
+      movesToQueue = step.moves.slice(startIndex);
+    } else {
+      this.currentStep++;
+      this.currentMoveIndex = -1;
+      step = this.steps[this.currentStep];
+      startIndex = 0;
+      movesToQueue = step.moves;
+    }
 
     this.viz.autoRotate = false;
-    this.viz.queueAlgorithm(step.alg, () => {
-      this._updateUI();
-      /* If playing, schedule the next step automatically */
-      if (this.isPlaying) {
-        const delay = Math.max(100, 600 - this.viz.animSpeed * 4000);
-        setTimeout(() => this.next(), delay);
-      }
+    movesToQueue.forEach((m, offset) => {
+      const moveTargetIndex = startIndex + offset;
+
+      this.viz.moveQueue.push({
+        __cb: () => {
+          this.currentMoveIndex = moveTargetIndex;
+          this._updateUI();
+        },
+      });
+      this.viz.moveQueue.push({ base: m.base, mod: m.mod });
     });
 
-    this._updateUI();
+    this.viz.moveQueue.push({
+      __cb: () => {
+        if (this.isPlaying) {
+          const delay = Math.max(100, 600 - this.viz.animSpeed * 4000);
+          setTimeout(() => this.next(), delay);
+        }
+      },
+    });
   }
 
   /** Go back one step (reset cube + replay). */
@@ -787,10 +800,21 @@ class StepController {
     this._replayUpTo(this.currentStep - 1);
   }
 
-  /** Jump to the state where `n` steps have been applied (0 = initial). */
+  /**
+   * CHANGE 4 — Jump to state BEFORE step n begins.
+   * goToStep(0)  → scrambled initial state (before any step)
+   * goToStep(1)  → state after step 0 has been applied (= before step 1)
+   * goToStep(n)  → state after steps 0..n-1 applied  (= before step n)
+   *
+   * This is used both by the ⏮/⏭ controls AND by step-card clicks.
+   * The old goToStep(i+1) called from cards becomes goToStep(i) here.
+   */
   goToStep(n) {
     this._stopPlay();
-    this._replayUpTo(n - 1);
+    // Захист від виходу за межі масиву кроків
+    const targetStep = Math.max(0, Math.min(n, this.steps.length - 1));
+    // Перемотуємо рівно до кроку targetStep, але без жодного виконаного ходу (moveIdx = -1)
+    this._replayUpToWithMoves(targetStep, -1);
   }
 
   /** Toggle play / pause. */
@@ -804,22 +828,118 @@ class StepController {
     }
   }
 
+  /* ---------- Sub-move API (CHANGE 3) ---------- */
+
+  /**
+   * Execute the NEXT individual move within the current step.
+   * If we're between steps (currentStep = -1), advance to step 0 first.
+   * If we're past the last move of the current step, advance to next step's
+   * first move.
+   */
+  nextMove() {
+    if (this.viz.moveQueue.length || this.viz.currentAnim) return;
+    this._stopPlay();
+
+    // If no step is active yet, start step 0
+    if (this.currentStep === -1) {
+      if (this.steps.length === 0) return;
+      this.currentStep = 0;
+      this.currentMoveIndex = -1;
+    }
+
+    const step = this.steps[this.currentStep];
+
+    // If we've exhausted all moves in the current step, move to next step
+    if (this.currentMoveIndex >= step.moves.length - 1) {
+      if (this.currentStep >= this.steps.length - 1) return; // already at end
+      this.currentStep++;
+      this.currentMoveIndex = -1;
+    }
+
+    this.currentMoveIndex++;
+    const { base, mod } =
+      this.steps[this.currentStep].moves[this.currentMoveIndex];
+
+    this.viz.autoRotate = false;
+    // Queue just this one move, with callback to update UI
+    this.viz.moveQueue.push({ base, mod });
+    this.viz.moveQueue.push({
+      __cb: () => this._updateUI(),
+    });
+
+    this._updateUI(); // optimistic update to highlight the move immediately
+  }
+
+  /**
+   * Execute the PREVIOUS individual move (reverse the last applied move).
+   * If at start of current step, step back into the previous step's last move.
+   */
+  prevMove() {
+    if (this.viz.moveQueue.length || this.viz.currentAnim) return;
+    this._stopPlay();
+
+    // Nothing to undo
+    if (this.currentStep === -1) return;
+
+    const step = this.steps[this.currentStep];
+
+    if (this.currentMoveIndex < 0) {
+      // We're at the start of a step; jump to end of previous step
+      if (this.currentStep === 0) {
+        // Already at very beginning — go back to initial state
+        this._replayUpTo(-1);
+        return;
+      }
+
+      // Крок назад (зменшуємо індекс поточного кроку на 1)
+      this.currentStep--;
+      const prevStep = this.steps[this.currentStep];
+
+      // ВИПРАВЛЕНО: Перебудовуємо кубик рівно до поточного (вже зменшеного) кроку
+      // та ставимо вказівник на його останній рух
+      this._replayUpToWithMoves(this.currentStep, prevStep.moves.length - 1);
+      return;
+    }
+
+    // Rebuild state from scratch up to (currentMoveIndex - 1) to stay clean
+    this.currentMoveIndex--;
+    this._replayUpToWithMoves(this.currentStep, this.currentMoveIndex);
+  }
+
   /* ---- Private helpers ---- */
 
-  /** Parse API data into a flat steps array. */
+  /**
+   * Parse API data into a flat steps array.
+   * Each step now also carries a pre-parsed `moves` array for sub-stepping.
+   */
   _buildSteps(data) {
     const steps = [];
 
     (data.edge_solution || []).forEach(([letter, alg]) => {
-      steps.push({ type: "edge", label: letter, alg });
+      steps.push({
+        type: "edge",
+        label: letter,
+        alg,
+        moves: this.viz._parseMoves(alg),
+      });
     });
 
     if (data.parity) {
-      steps.push({ type: "parity", label: "Parity", alg: data.parity });
+      steps.push({
+        type: "parity",
+        label: "Parity",
+        alg: data.parity,
+        moves: this.viz._parseMoves(data.parity),
+      });
     }
 
     (data.corner_solution || []).forEach(([letter, alg]) => {
-      steps.push({ type: "corner", label: letter, alg });
+      steps.push({
+        type: "corner",
+        label: letter,
+        alg,
+        moves: this.viz._parseMoves(alg),
+      });
     });
 
     return steps;
@@ -834,21 +954,52 @@ class StepController {
   }
 
   /**
-   * Reset cube to scrambled, then instantly replay all steps
+   * Reset cube to scrambled, then instantly replay all FULL steps
    * up to and including index `targetIdx` (−1 = just scrambled state).
+   * Also resets currentMoveIndex to -1 (before any move in the new current step).
    */
   _replayUpTo(targetIdx) {
+    // Якщо індекс менше 0, значить ми повертаємось у початковий (скремблований) стан
+    if (targetIdx < 0) {
+      this._replayUpToWithMoves(-1, -1);
+      return;
+    }
+
+    // Знаходимо валідний індекс кроку
+    const until = Math.min(targetIdx, this.steps.length - 1);
+
+    // Щоб стати рівно в КІНЕЦЬ виконаного кроку, знаходимо індекс його останнього ходу
+    const lastMove = this.steps[until].moves.length - 1;
+    this._replayUpToWithMoves(until, lastMove);
+  }
+
+  /**
+   * (CHANGE 3) Reset cube, replay full steps 0..stepIdx-1, then replay
+   * individual moves 0..moveIdx within step stepIdx.
+   * Used by prevMove() to rewind one move at a time cleanly.
+   */
+  _replayUpToWithMoves(stepIdx, moveIdx) {
     this.viz.moveQueue = [];
     this.viz.currentAnim = null;
 
     this._applyInitial();
 
-    const until = Math.min(targetIdx, this.steps.length - 1);
-    for (let i = 0; i <= until; i++) {
+    // Apply all complete steps before stepIdx
+    for (let i = 0; i < stepIdx; i++) {
       this.viz.applyAlgorithmInstant(this.steps[i].alg);
     }
 
-    this.currentStep = until;
+    // Apply partial moves within stepIdx
+    if (stepIdx >= 0 && stepIdx < this.steps.length) {
+      const step = this.steps[stepIdx];
+      const until = Math.min(moveIdx, step.moves.length - 1);
+      for (let m = 0; m <= until; m++) {
+        this.viz._execMoveInstant(step.moves[m].base, step.moves[m].mod);
+      }
+    }
+
+    this.currentStep = stepIdx;
+    this.currentMoveIndex = moveIdx;
     this._updateUI();
   }
 
@@ -874,7 +1025,7 @@ class StepController {
     /* Step detail */
     const tagEl = document.getElementById("stepTypeTag");
     const letterEl = document.getElementById("stepLetter");
-    const algEl = document.getElementById("stepAlg");
+    const algInnerEl = document.getElementById("stepAlgInner");
 
     if (this.currentStep === -1) {
       if (tagEl) {
@@ -882,8 +1033,8 @@ class StepController {
         tagEl.className = "step-type-tag";
       }
       if (letterEl) letterEl.textContent = "—";
-      if (algEl)
-        algEl.textContent = this.reverseAlg
+      if (algInnerEl)
+        algInnerEl.innerHTML = this.reverseAlg
           ? "Куб скремблований. Натисніть ▶ для початку."
           : "Куб у розв'язаному стані.";
     } else {
@@ -898,7 +1049,49 @@ class StepController {
         tagEl.className = `step-type-tag ${step.type}`;
       }
       if (letterEl) letterEl.textContent = step.label;
-      if (algEl) algEl.textContent = step.alg;
+
+      /*
+       * CHANGE 3 — Render move tokens with highlighting.
+       * Tokens before currentMoveIndex → done (dim)
+       * Token AT currentMoveIndex      → active (highlighted)
+       * Tokens after                   → pending (muted)
+       */
+      if (algInnerEl) {
+        if (step.moves.length === 0) {
+          algInnerEl.textContent = step.alg;
+        } else {
+          // Re-tokenise the raw alg string to preserve original notation
+          // (e.g. "R U R'") while mapping each parsed move to a display token.
+          const rawTokens =
+            step.alg.match(/([UDLRFBMESxyzudlrfb]w?['2]?)/g) || [];
+          algInnerEl.innerHTML = rawTokens
+            .map((tok, idx) => {
+              let cls = "move-token ";
+              if (idx < this.currentMoveIndex) cls += "move-done";
+              else if (idx === this.currentMoveIndex) cls += "move-active";
+              else cls += "move-pending";
+              return `<span class="${cls}">${tok}</span>`;
+            })
+            .join(" ");
+        }
+      }
+    }
+
+    /* Move sub-counter */
+    const moveCtrEl = document.getElementById("stepMoveCounter");
+    if (moveCtrEl) {
+      if (
+        this.currentStep >= 0 &&
+        this.steps[this.currentStep].moves.length > 0
+      ) {
+        const moveTotal = this.steps[this.currentStep].moves.length;
+        const moveCur = this.currentMoveIndex + 1;
+        moveCtrEl.textContent = `Хід ${moveCur}/${moveTotal}`;
+        moveCtrEl.classList.add("visible");
+      } else {
+        moveCtrEl.textContent = "";
+        moveCtrEl.classList.remove("visible");
+      }
     }
 
     /* Highlight active step card in the results list */
@@ -913,6 +1106,21 @@ class StepController {
 
     const nextBtn = document.getElementById("ctrlNext");
     if (nextBtn) nextBtn.disabled = this.currentStep >= this.steps.length - 1;
+
+    /* Sub-move buttons */
+    const movePrevBtn = document.getElementById("ctrlMovePrev");
+    const moveNextBtn = document.getElementById("ctrlMoveNext");
+    if (movePrevBtn) {
+      movePrevBtn.disabled =
+        this.currentStep === -1 && this.currentMoveIndex < 0;
+    }
+    if (moveNextBtn) {
+      const atEnd =
+        this.currentStep >= this.steps.length - 1 &&
+        this.currentStep >= 0 &&
+        this.currentMoveIndex >= this.steps[this.currentStep].moves.length - 1;
+      moveNextBtn.disabled = atEnd || this.steps.length === 0;
+    }
   }
 
   _updatePlayBtn() {
@@ -942,6 +1150,10 @@ class StepController {
       this._replayUpTo(this.steps.length - 1);
     });
 
+    /* CHANGE 3 — Sub-move buttons */
+    safe("ctrlMovePrev", () => this.prevMove());
+    safe("ctrlMoveNext", () => this.nextMove());
+
     const speedEl = document.getElementById("speedRange");
     const speedVal = document.getElementById("speedVal");
     if (speedEl) {
@@ -969,9 +1181,24 @@ function displayResults(data, controller) {
   /* Helper: insert commas every 2 letters for readability */
   const fmt = (str) => (str ? (str.match(/.{1,2}/g) || []).join(", ") : "—");
 
-  /* ---- Letter Sequence Card ---- */
+  /* ---- Letter Sequence Card (shows letter_seq + memo) ---- */
   const seqCard = document.createElement("div");
   seqCard.className = "seq-card";
+
+  // Build memo HTML blocks only when the field exists in the response
+  const cornersMemoHTML = data.corners_memo
+    ? `<div class="memo-block">
+         <div class="memo-label">Мнемонічні підказки для кутів</div>
+         <div class="memo-value memo-corners">${data.corners_memo}</div>
+       </div>`
+    : "";
+  const edgesMemoHTML = data.edges_memo
+    ? `<div class="memo-block">
+         <div class="memo-label">Мнемонічні підказки для ребер</div>
+         <div class="memo-value memo-edges">${data.edges_memo}</div>
+       </div>`
+    : "";
+
   seqCard.innerHTML = `
     <div class="result-card-title">Послідовності літер</div>
     <div class="seq-row">
@@ -982,10 +1209,12 @@ function displayResults(data, controller) {
       <span class="seq-label">Кути:</span>
       <span class="seq-value">${fmt(data.corner_letter_seq)}</span>
     </div>
+    ${edgesMemoHTML}
+    ${cornersMemoHTML}
   `;
   container.appendChild(seqCard);
 
-  /* ---- Steps List (click any step to jump to it) ---- */
+  /* ---- Steps List ---- */
   const stepsTitle = document.createElement("div");
   stepsTitle.className = "result-card-title";
   stepsTitle.style.cssText =
@@ -1023,11 +1252,18 @@ function displayResults(data, controller) {
       <span class="step-letter-disp">${step.label}</span>
       <code class="step-alg-disp">${step.alg}</code>
     `;
-    /* Click to jump to this step */
-    card.addEventListener(
-      "click",
-      () => controller && controller.goToStep(i + 1),
-    );
+
+    /**
+     * CHANGE 4: Clicking a step card now jumps to the state BEFORE that step
+     * begins (i.e. after step i-1 has been applied), so the user can then
+     * press Play or the sub-move › button to watch the step execute live.
+     *
+     * Previously: controller.goToStep(i + 1)  — jumped PAST the step.
+     * Now:        controller.goToStep(i)       — positions BEFORE the step.
+     */
+    card.addEventListener("click", () => {
+      if (controller) controller.goToStep(i);
+    });
     stepsList.appendChild(card);
   });
 
@@ -1097,7 +1333,7 @@ document.getElementById("sendColors").addEventListener("click", () => {
       panel.scrollIntoView({ behavior: "smooth", block: "start" });
     })
     .catch((err) => {
-      alert("Сталася помилка: " + err.message);
+      showToast("Неправильно введений кубик", "error");
     })
     .finally(() => {
       btn.disabled = false;
@@ -1108,10 +1344,6 @@ document.getElementById("sendColors").addEventListener("click", () => {
         Розв'язати`;
     });
 });
-
-/* ============================================================
- * SECTION 9 — CLEAR HANDLER  (clearColors)
- * ============================================================ */
 
 document.getElementById("clearColors").addEventListener("click", () => {
   /* Reset all corner and edge cells to unpainted state */
@@ -1140,3 +1372,32 @@ document.getElementById("clearColors").addEventListener("click", () => {
     stepController.isPlaying = false;
   }
 });
+
+/* ============================================================
+ * LAYOUT MODAL  (CHANGE 2)
+ * Opens/closes the "Розкладка" modal showing the letter scheme.
+ * ============================================================ */
+
+(function initLayoutModal() {
+  const openBtn = document.getElementById("openLayoutBtn");
+  const modal = document.getElementById("layoutModal");
+  const closeBtn = document.getElementById("closeLayoutBtn");
+
+  if (!openBtn || !modal || !closeBtn) return;
+
+  const open = () => modal.classList.add("open");
+  const close = () => modal.classList.remove("open");
+
+  openBtn.addEventListener("click", open);
+  closeBtn.addEventListener("click", close);
+
+  /* Close when clicking the dark overlay (outside the panel) */
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) close();
+  });
+
+  /* Close on Escape key */
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && modal.classList.contains("open")) close();
+  });
+})();

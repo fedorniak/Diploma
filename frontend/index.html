@@ -62,9 +62,80 @@
           <h1>OP/M2</h1>
           <span class="header-sub">BLD Cube Solver</span>
         </div>
+        <button class="header-layout-btn" id="openLayoutBtn" title="Переглянути розкладку літер">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="1" y="1" width="6" height="6" rx="1"/>
+            <rect x="9" y="1" width="6" height="6" rx="1"/>
+            <rect x="1" y="9" width="6" height="6" rx="1"/>
+            <rect x="9" y="9" width="6" height="6" rx="1"/>
+          </svg>
+          Розкладка
+        </button>
         <div class="header-badge">3x3 BLD</div>
       </div>
     </header>
+
+<div class="modal-overlay" id="layoutModal" role="dialog" aria-modal="true" aria-label="Розкладка BLD">
+      <div class="modal-panel">
+        <div class="modal-header">
+          <div class="modal-title-row">
+            <h2 class="modal-title">Розкладка літер</h2>
+          </div>
+          <button class="modal-close" id="closeLayoutBtn" aria-label="Закрити">&times;</button>
+        </div>
+
+        <div class="modal-body">
+<div class="cube-net">
+            <div class="net-row">
+              <div class="net-spacer"></div>
+              <div class="net-face net-face--blue">
+                <div class="net-cell corner">М</div><div class="net-cell edge">К</div><div class="net-cell corner">К</div>
+                <div class="net-cell edge">М</div><div class="net-cell center"></div><div class="net-cell edge">Л</div>
+                <div class="net-cell corner">І</div><div class="net-cell edge">І</div><div class="net-cell corner">Л</div>
+              </div>
+              <div class="net-spacer"></div>
+            </div>
+
+            <div class="net-row">
+              <div class="net-face net-face--orange">
+                <div class="net-cell corner">С</div><div class="net-cell edge">С</div><div class="net-cell corner">О</div>
+                <div class="net-cell edge">Р</div><div class="net-cell center"></div><div class="net-cell edge">О</div>
+                <div class="net-cell corner">Р</div><div class="net-cell edge">П</div><div class="net-cell corner">П</div>
+              </div>
+              <div class="net-face net-face--white">
+                <div class="net-cell corner">А</div><div class="net-cell edge">А</div><div class="net-cell corner">Б</div>
+                <div class="net-cell edge">Г</div><div class="net-cell center"></div><div class="net-cell edge">Б</div>
+                <div class="net-cell corner">Г</div><div class="net-cell edge">В</div><div class="net-cell corner">В</div>
+              </div>
+              <div class="net-face net-face--red">
+                <div class="net-cell corner">У</div><div class="net-cell edge">Ц</div><div class="net-cell corner">Ц</div>
+                <div class="net-cell edge">У</div><div class="net-cell center"></div><div class="net-cell edge">Х</div>
+                <div class="net-cell corner">Ф</div><div class="net-cell edge">Ф</div><div class="net-cell corner">Х</div>
+              </div>
+            </div>
+
+            <div class="net-row">
+              <div class="net-spacer"></div>
+              <div class="net-face net-face--green">
+                <div class="net-cell corner">Є</div><div class="net-cell edge">Є</div><div class="net-cell corner">Д</div>
+                <div class="net-cell edge">З</div><div class="net-cell center"></div><div class="net-cell edge">Д</div>
+                <div class="net-cell corner">З</div><div class="net-cell edge">Ж</div><div class="net-cell corner">Ж</div>
+              </div>
+              <div class="net-spacer"></div>
+            </div>
+
+            <div class="net-row">
+              <div class="net-spacer"></div>
+              <div class="net-face net-face--yellow">
+                <div class="net-cell corner">Я</div><div class="net-cell edge">Ю</div><div class="net-cell corner">Ю</div>
+                <div class="net-cell edge">Я</div><div class="net-cell center"></div><div class="net-cell edge">Е</div>
+                <div class="net-cell corner">Ш</div><div class="net-cell edge">Ш</div><div class="net-cell corner">Е</div>
+              </div>
+              <div class="net-spacer"></div>
+            </div>
+          </div>
+          </div></div></div>
+    </div>
 
     <!-- ========== MAIN APP ========== -->
     <main class="app-layout">
@@ -322,35 +393,36 @@
               <div class="step-progress-track">
                 <div class="step-progress-fill" id="stepProgressFill"></div>
               </div>
+              <span class="step-move-counter" id="stepMoveCounter"></span>
             </div>
             <div class="step-detail-row">
               <span class="step-type-tag" id="stepTypeTag">—</span>
               <span class="step-letter-display" id="stepLetter">—</span>
-              <code class="step-alg-display" id="stepAlg"
-                >Розв'яжіть куб для початку</code
-              >
+              <code class="step-alg-display" id="stepAlg"><span id="stepAlgInner">Розв'яжіть куб для початку</span></code>
             </div>
           </div>
 
           <!-- Playback controls -->
           <div class="viz-controls" id="vizControls">
-            <button class="ctrl-btn" id="ctrlReset" title="На початок">
-              ⏮
-            </button>
-            <button class="ctrl-btn" id="ctrlPrev" title="Попередній крок">
-              ◀
-            </button>
-            <button
-              class="ctrl-btn ctrl-play"
-              id="ctrlPlay"
-              title="Відтворити / Пауза"
-            >
-              ▶
-            </button>
-            <button class="ctrl-btn" id="ctrlNext" title="Наступний крок">
-              ▶
-            </button>
-            <button class="ctrl-btn" id="ctrlEnd" title="До кінця">⏭</button>
+            <!-- Step-level controls -->
+            <div class="ctrl-group ctrl-group--step" title="Навігація по кроках">
+              <button class="ctrl-btn" id="ctrlReset" title="На початок">⏮</button>
+              <button class="ctrl-btn" id="ctrlPrev" title="Попередній крок">◀</button>
+              <button class="ctrl-btn ctrl-play" id="ctrlPlay" title="Відтворити / Пауза">▶</button>
+              <button class="ctrl-btn" id="ctrlNext" title="Наступний крок">▶</button>
+              <button class="ctrl-btn" id="ctrlEnd" title="До кінця">⏭</button>
+            </div>
+
+            <!-- Divider -->
+            <div class="ctrl-divider"></div>
+
+            <!-- Sub-move controls (individual moves within a step) -->
+            <div class="ctrl-group ctrl-group--move" title="Навігація по ходах">
+              <span class="ctrl-group-label">Хід:</span>
+              <button class="ctrl-btn ctrl-btn--sub" id="ctrlMovePrev" title="Попередній хід">‹</button>
+              <button class="ctrl-btn ctrl-btn--sub" id="ctrlMoveNext" title="Наступний хід">›</button>
+            </div>
+
             <div class="speed-wrap">
               <span class="speed-label">Швидкість</span>
               <input type="range" id="speedRange" min="1" max="5" value="3" />
