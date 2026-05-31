@@ -44,6 +44,8 @@ const CUBE_COLORS = {
  *   F  → CW from +Z  → negative rotation around Z  → -π/2
  *   B  → CW from -Z  → positive rotation around Z  → +π/2
  */
+const API_URL = "http://127.0.0.1:8000/api";
+
 const MOVE_DEFS = {
   // Single-layer moves
   U: { axis: "y", layers: [1], angle: -Math.PI / 2 },
@@ -1289,7 +1291,7 @@ document.getElementById("sendColors").addEventListener("click", () => {
   btn.disabled = true;
   btn.innerHTML = '<span style="opacity:.6">⏳</span> Розв\'язуємо…';
 
-  fetch("http://127.0.0.1:8000/api/solve/", {
+  fetch(`${API_URL}/solve/`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
