@@ -31,6 +31,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'corsheaders'
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -38,10 +39,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'cube_solver',
-    'corsheaders'
+    
 ]
 
 MIDDLEWARE = [
+     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -49,7 +51,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',  # Додай на початок
     
 ]
 CORS_ALLOW_ALL_ORIGINS = True
@@ -73,7 +74,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'BLD_solver.wsgi.application'
 
-
+ASGI_APPLICATION = 'BLD_solver.asgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
