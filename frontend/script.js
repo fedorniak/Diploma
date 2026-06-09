@@ -44,7 +44,7 @@ const CUBE_COLORS = {
  *   F  → CW from +Z  → negative rotation around Z  → -π/2
  *   B  → CW from -Z  → positive rotation around Z  → +π/2
  */
-const API_URL = "http://127.0.0.1:8000/api";
+const API_URL = "https://bld-solver-rox7.onrender.com/api";
 
 const MOVE_DEFS = {
   // Single-layer moves
